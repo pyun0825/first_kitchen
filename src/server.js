@@ -1,10 +1,11 @@
 import express from "express";
 import "dotenv/config";
-import "./db";
+import db from "../models";
 import morgan from "morgan";
 import rootRouter from "./routers/rootRouter";
 
 const app = express();
+
 const logger = morgan("dev");
 
 const PORT = 4000;
@@ -20,6 +21,8 @@ const handleListening = () => {
   console.log(`Server Listening on port: http://localhost:${PORT}`);
 };
 
-app.listen(PORT, handleListening);
+db.sequelize.sync().then((req) => {
+  app.listen(PORT, handleListening);
+});
 
 app.use("/", rootRouter);
