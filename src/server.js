@@ -1,4 +1,6 @@
 import express from "express";
+import "dotenv/config";
+import "./db";
 import morgan from "morgan";
 import rootRouter from "./routers/rootRouter";
 
