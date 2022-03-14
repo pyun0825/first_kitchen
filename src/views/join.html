@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>회원가입</h1>
+    <form method="POST">
+      <input type="email" name="email" placeholder="이메일 주소" required />
+      <input type="text" name="username" placeholder="닉네임" required />
+      <input type="password" name="password" placeholder="비밀번호" required />
+      <input
+        type="password"
+        name="password2"
+        placeholder="비밀번호 확인"
+        required
+      />
+      <input type="submit" value="Join" />
+    </form>
+    <div>
+      <span>이미 계정이 있으신가요?</span>
+      <a href="/login">로그인</a>
+    </div>
+  </body>
+</html>
