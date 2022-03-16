@@ -26,6 +26,8 @@ export const postLogin = async (req, res) => {
     return res.status(400).render("login.html");
   }
   // session login 필요
+  req.session.loggedIn = true;
+  req.session.user = user;
   return res.redirect("/");
 };
 
@@ -59,4 +61,9 @@ export const postJoin = async (req, res) => {
     console.log(error);
     return res.status(400).render("join.html");
   }
+};
+
+export const logout = (req, res) => {
+  req.session.destroy();
+  return res.redirect("/");
 };
