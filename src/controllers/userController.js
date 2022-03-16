@@ -25,7 +25,6 @@ export const postLogin = async (req, res) => {
     console.log("password incorrect");
     return res.status(400).render("login.html");
   }
-  // session login 필요
   req.session.loggedIn = true;
   req.session.user = user;
   return res.redirect("/");

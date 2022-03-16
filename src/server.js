@@ -4,7 +4,7 @@ import session from "express-session";
 import db from "../models";
 import morgan from "morgan";
 import rootRouter from "./routers/rootRouter";
-import { localsMiddleware } from "../middlewares";
+import { localsMiddleware } from "./middlewares";
 var MySQLStore = require("express-mysql-session")(session);
 
 var options = {
