@@ -1,0 +1,12 @@
+header
+    a(href="/") First Kitchen 
+    nav 
+        ul 
+            if loggedIn 
+                li 
+                    a(href="/logout") Log Out 
+            else 
+                li 
+                    a(href="/login") Login
+                li 
+                    a(href="/join") Join 
