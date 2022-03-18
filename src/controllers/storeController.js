@@ -38,12 +38,15 @@ export const getStore = async (req, res) => {
     type: 2,
   };
   let menus = [menu1, menu2, menu3];
-  const like = await Like.findOne({
-    where: {
-      user_id: req.session.user.id || null,
-      store_id: id,
-    },
-  });
+  let like = null;
+  if (req.session.loggedIn) {
+    like = await Like.findOne({
+      where: {
+        user_id: req.session.user.id,
+        store_id: id,
+      },
+    });
+  }
   return res.render("storeInfo", {
     pageTitle: store.storeName,
     store,

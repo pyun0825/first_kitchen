@@ -1,12 +1,12 @@
-header
-    a(href="/") First Kitchen 
+header.navbar.navbar-expand-lg.navbar-light.bg-light
+    a(href="/").navbar-brand First Kitchen 
     nav 
-        ul 
+        ul.navbar-nav
             if loggedIn 
-                li 
-                    a(href="/logout") Log Out 
+                li.nav-item
+                    a(href="/logout").nav-link Log Out 
             else 
-                li 
-                    a(href="/login") Login
-                li 
-                    a(href="/join") Join 
+                li.nav-item
+                    a(href="/login").nav-link Login
+                li.nav-item
+                    a(href="/join").nav-link Join 
