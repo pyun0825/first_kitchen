@@ -1,7 +1,7 @@
-import { Cart, Incart } from "../../models";
+import { Cart, Incart, Like } from "../../models";
 
-export const getStore = (req, res) => {
-  const { id } = req.params;
+export const getStore = async (req, res) => {
+  const { id } = req.params; //==storeId
   // 이때 id를 점주측에 보내주면 해당 가계의 모든 메뉴 정보 전달 받아야
   // menu = {product_id, name, price, memo, isRecommended, type}
   //가계 정보도 다 받아야 할듯
@@ -38,11 +38,38 @@ export const getStore = (req, res) => {
     type: 2,
   };
   let menus = [menu1, menu2, menu3];
+  const like = await Like.findOne({
+    where: {
+      user_id: req.session.user.id || null,
+      store_id: id,
+    },
+  });
   return res.render("storeInfo", {
     pageTitle: store.storeName,
     store,
     menus,
+    like,
   });
+};
+
+export const postStore = (req, res) => {
+  //좋아요 버튼
+  const { id } = req.params; //storeid
+  const { submit } = req.body;
+  if (submit === "Like") {
+    Like.create({
+      user_id: req.session.user.id,
+      store_id: id,
+    });
+  } else {
+    Like.destroy({
+      where: {
+        user_id: req.session.user.id,
+        store_id: id,
+      },
+    });
+  }
+  return res.redirect(`/stores/${id}`);
 };
 
 export const getMenu = (req, res) => {
