@@ -2,17 +2,19 @@ extends base
 include mixins/menu
 
 block content 
-    div.store-info
-        span.store-info__title=store.storeName 
-        span.store-info__rating tobe added 
-        span.store-info__fee 배달팁 #{store.fee} 
-        form(method="post")
-            if like 
-                input(type="submit", name="submit", value="Unlike")
-            else 
-                input(type="submit", name="submit", value="Like")
-    div.menu-grid
-        each menu in menus 
-            +menu(store.store_id, menu)
-        else
-            span.empty__message 등록된 메뉴가 없습니다!
+    div.d-flex.flex-column.align-items-center
+        img.img-fluid.rounded.border.border-light(src="https://picsum.photos/400/200")
+        div.store-info.d-flex.flex-column.align-items-center.mb-3
+            h3.store-info__title=store.storeName 
+            form(method="post")
+                if like 
+                    input(type="submit", name="submit", value="Unlike")
+                else 
+                    input(type="submit", name="submit", value="Like")
+            div.store-info__rating ★ to be added 
+            div.store-info__fee 배달팁 #{store.fee}원
+        div.menu-grid.d-flex.flex-column.align-items-center
+            each menu in menus 
+                +menu(store.store_id, menu)
+            else
+                span.empty__message 등록된 메뉴가 없습니다!

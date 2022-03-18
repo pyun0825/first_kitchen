@@ -9,18 +9,21 @@ export const home = (req, res) => {
     storeName: "Hell's Kitchen",
     storeAddress: "고려대로28",
     isOpen: true,
+    fee: 1000,
   };
   const store2 = {
     store_id: 2,
     storeName: "Burger King",
     storeAddress: "안암로123",
     isOpen: true,
+    fee: 2500,
   };
   const store3 = {
     store_id: 3,
     storeName: "안암꼬치",
     storeAddress: "안암로1223",
     isOpen: false,
+    fee: 3000,
   };
   let stores = [store1, store2, store3];
   return res.render("home", { pageTitle: "First Kitchen", stores });

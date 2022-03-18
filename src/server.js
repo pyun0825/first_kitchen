@@ -48,5 +48,6 @@ app.use(
   })
 );
 app.use(localsMiddleware);
+app.use("/static", express.static("assets"));
 app.use("/", rootRouter);
 app.use("/stores", storeRouter);
