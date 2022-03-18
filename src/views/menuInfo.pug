@@ -1,0 +1,10 @@
+extends base
+
+block content 
+    div.menu-info
+        span.menu-info__title=menu.name
+        p.menu-info__description=menu.memo
+        span.menu-info__price=menu.price
+    form(method="post") 
+        input(type="number", name="quantity", value="1", required)
+        input(type="submit", value="장바구니에 담기", min="0")

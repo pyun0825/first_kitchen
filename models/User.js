@@ -20,6 +20,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     // 위치 정보 needs to be added
   });
+  User.associate = (models) => {
+    User.hasMany(models.Cart, {
+      foreignKey: "user_id",
+    });
+  };
   User.beforeSave(async (user, options) => {
     if (user.changed("password")) {
       user.password = await bcrypt.hash(user.password, 5);

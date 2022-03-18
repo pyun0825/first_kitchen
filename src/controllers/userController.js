@@ -2,7 +2,28 @@ import bcrypt from "bcrypt";
 import { User } from "../../models";
 
 export const home = (req, res) => {
-  return res.render("home", { pageTitle: "First Kitchen" });
+  // 필요한 가계 정보 받아서 출력
+  // store = {store_id, storeName, storeAddress, isOpen}
+  const store1 = {
+    store_id: 1,
+    storeName: "Hell's Kitchen",
+    storeAddress: "고려대로28",
+    isOpen: true,
+  };
+  const store2 = {
+    store_id: 2,
+    storeName: "Burger King",
+    storeAddress: "안암로123",
+    isOpen: true,
+  };
+  const store3 = {
+    store_id: 3,
+    storeName: "안암꼬치",
+    storeAddress: "안암로1223",
+    isOpen: false,
+  };
+  let stores = [store1, store2, store3];
+  return res.render("home", { pageTitle: "First Kitchen", stores });
 };
 
 export const getLogin = (req, res) => {

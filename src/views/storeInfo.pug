@@ -1,0 +1,13 @@
+extends base
+include mixins/menu
+
+block content 
+    div.store-info
+        span.store-info__title=store.storeName 
+        span.store-info__rating tobe added 
+        span.store-info__fee 배달팁 #{store.fee} 
+    div.menu-grid
+        each menu in menus 
+            +menu(store.store_id, menu)
+        else
+            span.empty__message 등록된 메뉴가 없습니다!

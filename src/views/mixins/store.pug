@@ -1,0 +1,11 @@
+mixin store(store)
+    a(href=`/stores/${store.store_id}`).store-mixin
+        div.store-mixin__desc
+            ul
+            span.store-mixin__title=store.storeName
+            span.store-mixin__rating ★ To be added 
+            span.store-mixin__distance 0.0km
+            span.store-mixin__fee 0원
+
+
+

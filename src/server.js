@@ -5,6 +5,7 @@ import db from "../models";
 import morgan from "morgan";
 import rootRouter from "./routers/rootRouter";
 import { localsMiddleware } from "./middlewares";
+import storeRouter from "./routers/storeRouter";
 var MySQLStore = require("express-mysql-session")(session);
 
 var options = {
@@ -48,3 +49,4 @@ app.use(
 );
 app.use(localsMiddleware);
 app.use("/", rootRouter);
+app.use("/stores", storeRouter);
