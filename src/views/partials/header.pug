@@ -4,6 +4,8 @@ header.navbar.navbar-expand-lg.navbar-light.bg-light.px-3.mb-3
         ul.navbar-nav
             if loggedIn 
                 li.nav-item
+                    a(href=`/user/${loggedInUser.id}`).nav-link=loggedInUser.nickname
+                li.nav-item
                     a(href="/logout").nav-link Log Out 
             else 
                 li.nav-item

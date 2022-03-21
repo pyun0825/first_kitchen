@@ -8,3 +8,25 @@ a {
   gap: 50px;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
 }
+
+#to-cart {
+  display: flex;
+  position: fixed;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  color: white;
+  opacity: 1;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #1dbbfc;
+  opacity: 0.9;
+  transition: opacity 0.5s;
+}
+
+#to-cart:hover {
+  opacity: 1;
+}

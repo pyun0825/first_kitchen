@@ -1,0 +1,9 @@
+extends base
+include mixins/cartMenu
+
+block content 
+    each store in grouped
+        h4.cart__store-name=store[0].store_name
+        each menu in store 
+            +cartMenu(menu)
+        hr
