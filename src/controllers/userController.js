@@ -142,20 +142,24 @@ export const deleteCart = async (req, res) => {
 };
 
 export const getProfile = async (req, res) => {
-  const { id } = req.session.user.id;
+  const { id } = req.session.user;
   //profile에 뭐 표시 할건지 생각
   //edit profile, change pw, 좋아요 목록
   return res.render("profile", { pageTitle: "Profile" });
 };
 
 export const getLikes = async (req, res) => {
-  const { id } = req.session.user.id;
+  const { id } = req.session.user;
+  console.log(id);
   const likeArr = await Like.findAll({
     where: {
       user_id: id,
     },
     raw: true,
   });
-  //populate store in like
-  return res.render("likes", { pageTitle: "Likes", likeArr });
+  //Like 한 store_id 들 jj로 보내고 관련 store 정보 home화면과 같이 받아온다.
+  let stores = [store1, store2, store3];
+  return res.render("likes", { pageTitle: "Likes", stores });
 };
+
+export const postOrder = async (req, res) => {};

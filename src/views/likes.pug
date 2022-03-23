@@ -1,0 +1,10 @@
+extends base
+include mixins/store
+
+block content 
+    h3.likes-title 찜한 가계
+    div.store-grid
+        each store in stores 
+            +store(store)
+        else 
+            span.empty__message 주변에 가계가 없습니다!

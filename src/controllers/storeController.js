@@ -105,12 +105,38 @@ export const postMenu = async (req, res) => {
       user_id: req.session.user.id,
     });
   }
-  await Incart.create({
-    store_id: id,
-    menu_id,
-    menu_type: type,
-    cart_id: cart.id,
-    quantity,
+  // await Incart.create({
+  //   store_id: id,
+  //   menu_id,
+  //   menu_type: type,
+  //   cart_id: cart.id,
+  //   quantity,
+  // });
+  const prevAdded = await Incart.findOne({
+    where: {
+      cart_id: cart.id,
+      store_id: id,
+      menu_id,
+      menu_type: type,
+    },
   });
+  if (!prevAdded) {
+    await Incart.create({
+      store_id: id,
+      menu_id,
+      menu_type: type,
+      cart_id: cart.id,
+      quantity,
+    });
+  } else {
+    Incart.increment(
+      { quantity },
+      {
+        where: {
+          id: prevAdded.id,
+        },
+      }
+    );
+  }
   return res.redirect(`/stores/${id}`);
 };

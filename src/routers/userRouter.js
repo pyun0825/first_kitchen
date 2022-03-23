@@ -11,7 +11,7 @@ const userRouter = express.Router();
 
 userRouter.get("/cart", protectorMiddleware, getCart);
 userRouter.get("/cart/delete", protectorMiddleware, deleteCart);
-userRouter.get("/:id", protectorMiddleware, getProfile);
 userRouter.get("/likes", protectorMiddleware, getLikes);
+userRouter.get("/:id", protectorMiddleware, getProfile);
 
 export default userRouter;
