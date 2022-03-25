@@ -7,3 +7,9 @@ block content
         each menu in store 
             +cartMenu(menu)
             hr
+        else 
+            span.empty__message 장바구니에 담은 메뉴가 없습니다!
+    else 
+        span.empty__message 장바구니에 담은 메뉴가 없습니다!
+    form(method="post") 
+        input(type="submit", value="Order")

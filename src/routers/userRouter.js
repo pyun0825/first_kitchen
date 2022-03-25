@@ -4,12 +4,13 @@ import {
   getCart,
   getLikes,
   getProfile,
+  postCart,
 } from "../controllers/userController";
 import { protectorMiddleware } from "../middlewares";
 
 const userRouter = express.Router();
 
-userRouter.get("/cart", protectorMiddleware, getCart);
+userRouter.route("/cart").all(protectorMiddleware).get(getCart).post(postCart);
 userRouter.get("/cart/delete", protectorMiddleware, deleteCart);
 userRouter.get("/likes", protectorMiddleware, getLikes);
 userRouter.get("/:id", protectorMiddleware, getProfile);

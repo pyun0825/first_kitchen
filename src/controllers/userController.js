@@ -102,7 +102,7 @@ export const getCart = async (req, res) => {
   });
   if (!cart) {
     //nothing in cart page
-    return res.redirect("/");
+    return res.render("cart", { pageTitle: "Cart", grouped: {} });
   }
   let incarts = await Incart.findAll({
     where: {
@@ -150,7 +150,6 @@ export const getProfile = async (req, res) => {
 
 export const getLikes = async (req, res) => {
   const { id } = req.session.user;
-  console.log(id);
   const likeArr = await Like.findAll({
     where: {
       user_id: id,
@@ -162,4 +161,31 @@ export const getLikes = async (req, res) => {
   return res.render("likes", { pageTitle: "Likes", stores });
 };
 
-export const postOrder = async (req, res) => {};
+export const postCart = async (req, res) => {
+  const { id } = req.session.user;
+  const cart = await Cart.findOne({
+    where: {
+      user_id: id,
+      finished: false,
+    },
+  });
+  if (!cart) {
+    //장바구니가 애초에 안 만들어졌을 때
+    console.log("장바구니에 든 제품이 없습니다!");
+    return res.redirect("/");
+  }
+  const orders = await Incart.findAll({
+    where: {
+      cart_id: cart.id,
+    },
+    raw: true,
+  });
+  if (orders.length === 0) {
+    // 장바구니 만들어졌으나 안에 내용물을 다 비웠을 때
+    console.log("장바구니에 든 제품이 없습니다!");
+    return res.redirect("/");
+  }
+  //주문 답변 오면 finished true로
+  cart.update({ finished: true });
+  return res.redirect("/");
+};
