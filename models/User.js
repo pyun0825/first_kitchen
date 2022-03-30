@@ -1,25 +1,32 @@
 import bcrypt from "bcrypt";
 
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define("User", {
-    // id, createdAt, updatedAt 자동 생성
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
+  const User = sequelize.define(
+    "User",
+    {
+      // id, createdAt, updatedAt 자동 생성
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      nickname: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      tel: {
+        type: DataTypes.STRING,
+      },
+      // 위치 정보 needs to be added
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    nickname: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    tel: {
-      type: DataTypes.STRING,
-    },
-    // 위치 정보 needs to be added
-  });
+    {
+      charset: "utf8",
+      collate: "utf8_general_ci",
+    }
+  );
   User.associate = (models) => {
     User.hasMany(models.Cart, {
       foreignKey: "user_id",

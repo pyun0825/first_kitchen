@@ -30,6 +30,7 @@ app.engine("html", require("ejs").renderFile); // temporarily using html only
 app.set("views", process.cwd() + "/src/views");
 
 app.use(logger);
+app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // for post request encoding
 
 const handleListening = () => {

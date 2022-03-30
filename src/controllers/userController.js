@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { User, Cart, Incart, Like } from "../../models";
 import { groupBy } from "lodash";
+import axios from "axios";
 
 const store1 = {
   store_id: 1,
@@ -24,10 +25,14 @@ const store3 = {
   fee: 3000,
 };
 
-export const home = (req, res) => {
+export const home = async (req, res) => {
   // 필요한 가계 정보 받아서 출력
   // store = {store_id, storeName, storeAddress, isOpen}
-  let stores = [store1, store2, store3];
+  const stores_test = await axios.post(
+    `http://192.168.100.62:4000/consumer/getAllStore`
+  );
+  // let stores = [store1, store2, store3];
+  let stores = stores_test.data.store;
   return res.render("home", { pageTitle: "First Kitchen", stores });
 };
 
@@ -110,7 +115,10 @@ export const getCart = async (req, res) => {
     },
     raw: true,
   });
-  // cart 내 incart 들을 모두 jj로 api req보내서 이름, 가격 받아오고 이를 store 별로 나눠야..
+  const menus = await axios.post(
+    `http://192.168.100.62:4000/consumer/getAllStore`,
+    { data: incarts }
+  );
   const menu = {
     product_id: 1,
     name: "햄버거",
@@ -125,7 +133,6 @@ export const getCart = async (req, res) => {
     incarts[i].store_name = "Store " + incarts[i].store_id; //store name 도 받아와야 할듯
   }
   const grouped = groupBy(incarts, "store_id");
-  console.log(grouped);
   //그리고 page에 store 별로 메뉴 render
   return res.render("cart", { pageTitle: "Cart", grouped });
 };
@@ -186,6 +193,43 @@ export const postCart = async (req, res) => {
     return res.redirect("/");
   }
   //주문 답변 오면 finished true로
-  cart.update({ finished: true });
-  return res.redirect("/");
+  const sendingParams = {
+    store_id: 1,
+    user_id: req.session.user.id,
+    user_nickname: req.session.user.nickname,
+    deliveryApp: "First Kitchen",
+    receptionType: "Delivery",
+    orderTime: new Date(),
+    jibunAddress: "한글",
+    roadAddress: "NOT IN DB YET",
+    addressDetail: "NOT IN DB YET",
+    memo: "WILL ADD",
+    request: "WILL ADD",
+    tel: req.session.user.tel,
+    payType: "None",
+    totalPaidPrice: 230000,
+    totalPrice: 10100,
+    discountPrice: 200,
+    deliveryPrice: 1000,
+    orders: orders,
+  };
+  axios
+    .post(`http://192.168.100.62:4000/consumer/postDeliveryInfo`, {
+      data: sendingParams,
+    })
+    .then(function (response) {
+      console.log(response);
+      cart.update({ finished: true });
+      return res.redirect("/");
+    })
+    .catch(function (error) {
+      console.log(error);
+      return res.redirect("/");
+    });
+};
+//http://192.168.100.65:4000/consumer/postDeliveryInfo
+//for api testing
+export const postDummy = (req, res) => {
+  console.log("Received: ", req.body.data);
+  return res.status(200);
 };

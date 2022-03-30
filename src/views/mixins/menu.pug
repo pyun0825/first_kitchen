@@ -1,5 +1,5 @@
 mixin menu(store_id, menu)
-    a(href=`/stores/${store_id}/${menu.product_id}?type=${menu.type}`).menu-mixin
+    a(href=`/stores/${store_id}/${menu.id}?type=${menu.type}`).menu-mixin
         div.menu__desc
             span.menu__title=menu.name 
             span.menu__price=menu.price 

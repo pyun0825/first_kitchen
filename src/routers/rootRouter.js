@@ -6,6 +6,7 @@ import {
   postJoin,
   postLogin,
   logout,
+  postDummy,
 } from "../controllers/userController";
 import { protectorMiddleware, publicOnlyMiddleware } from "../middlewares";
 
@@ -19,5 +20,6 @@ rootRouter
   .post(postLogin);
 rootRouter.route("/join").all(publicOnlyMiddleware).get(getJoin).post(postJoin);
 rootRouter.get("/logout", protectorMiddleware, logout);
+rootRouter.post("/dummy", postDummy);
 
 export default rootRouter;
