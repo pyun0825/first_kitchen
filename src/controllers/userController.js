@@ -3,36 +3,48 @@ import { User, Cart, Incart, Like } from "../../models";
 import { groupBy } from "lodash";
 import axios from "axios";
 
-const store1 = {
-  store_id: 1,
-  storeName: "Hell's Kitchen",
-  storeAddress: "고려대로28",
-  isOpen: true,
-  fee: 1000,
-};
-const store2 = {
-  store_id: 2,
-  storeName: "Burger King",
-  storeAddress: "안암로123",
-  isOpen: true,
-  fee: 2500,
-};
-const store3 = {
-  store_id: 3,
-  storeName: "안암꼬치",
-  storeAddress: "안암로1223",
-  isOpen: false,
-  fee: 3000,
-};
+// const store1 = {
+//   store_id: 1,
+//   storeName: "Hell's Kitchen",
+//   storeAddress: "고려대로28",
+//   isOpen: true,
+//   fee: 1000,
+// };
+// const store2 = {
+//   store_id: 2,
+//   storeName: "Burger King",
+//   storeAddress: "안암로123",
+//   isOpen: true,
+//   fee: 2500,
+// };
+// const store3 = {
+//   store_id: 3,
+//   storeName: "안암꼬치",
+//   storeAddress: "안암로1223",
+//   isOpen: false,
+//   fee: 3000,
+// };
 
 export const home = async (req, res) => {
   // 필요한 가계 정보 받아서 출력
   // store = {store_id, storeName, storeAddress, isOpen}
-  const stores_test = await axios.post(
-    `http://192.168.100.62:4000/consumer/getAllStore`
-  );
-  // let stores = [store1, store2, store3];
-  let stores = stores_test.data.store;
+  const apiRes = await axios
+    .post(`http://192.168.100.62:4000/consumer/getAllStore`)
+    .catch(function (error) {
+      if (error.response) {
+        // req, res 됐으나 res가 에러를 반환시 (status code != 2xx)
+        console.log("점주측 서버 에러 - 가계정보 못받아옴", error.response);
+        return res.render("home", { pageTitle: "First Kitchen", stores: [] });
+      } else if (error.request) {
+        // res 없음, 통신 두절
+        console.log("통신 두절 - 가계정보 못받아옴", error.request);
+        return res.render("home", { pageTitle: "First Kitchen", stores: [] });
+      } else {
+        console.log("Error", error.message);
+        return res.render("home", { pageTitle: "First Kitchen", stores: [] });
+      }
+    });
+  const stores = apiRes.data.store;
   return res.render("home", { pageTitle: "First Kitchen", stores });
 };
 
@@ -49,12 +61,20 @@ export const postLogin = async (req, res) => {
   });
   if (!user) {
     console.log("No id found");
-    return res.status(400).render("login");
+    return res
+      .status(400)
+      .send(
+        "<script>alert('아이디가 없습니다!'); window.location.replace('/login');</script>"
+      );
   }
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) {
     console.log("password incorrect");
-    return res.status(400).render("login");
+    return res
+      .status(400)
+      .send(
+        "<script>alert('패스워드가 틀립니다.'); window.location.replace('/login');</script>"
+      );
   }
   req.session.loggedIn = true;
   req.session.user = user;
@@ -68,7 +88,11 @@ export const getJoin = (req, res) => {
 export const postJoin = async (req, res) => {
   const { email, nickname, password, password2, tel } = req.body;
   if (password !== password2) {
-    return res.status(400).render("join");
+    return res
+      .status(400)
+      .send(
+        "<script>alert('패스워드가 일치하지 않습니다.'); window.location.replace('/join');</script>"
+      );
   }
   const exists = await User.findOne({
     where: {
@@ -77,7 +101,11 @@ export const postJoin = async (req, res) => {
   });
   if (exists) {
     console.log("Account already exists with corresponding email");
-    return res.status(400).render("join");
+    return res
+      .status(400)
+      .send(
+        "<script>alert('이미 계정이 존재 합니다.'); window.location.replace('/login');</script>"
+      );
   }
   try {
     await User.create({
@@ -106,7 +134,6 @@ export const getCart = async (req, res) => {
     },
   });
   if (!cart) {
-    //nothing in cart page
     return res.render("cart", { pageTitle: "Cart", grouped: {} });
   }
   let incarts = await Incart.findAll({
@@ -115,6 +142,7 @@ export const getCart = async (req, res) => {
     },
     raw: true,
   });
+  console.log(incarts);
   const menus = await axios.post(
     `http://192.168.100.62:4000/consumer/getAllStore`,
     { data: incarts }
@@ -218,8 +246,8 @@ export const postCart = async (req, res) => {
       data: sendingParams,
     })
     .then(function (response) {
-      console.log(response);
-      cart.update({ finished: true });
+      const delivery_id = response.data.id;
+      cart.update({ finished: true, delivery_id, orderTime: new Date() });
       return res.redirect("/");
     })
     .catch(function (error) {
@@ -227,9 +255,5 @@ export const postCart = async (req, res) => {
       return res.redirect("/");
     });
 };
-//http://192.168.100.65:4000/consumer/postDeliveryInfo
-//for api testing
-export const postDummy = (req, res) => {
-  console.log("Received: ", req.body.data);
-  return res.status(200);
-};
+
+export const postStatus = (req, res) => {};

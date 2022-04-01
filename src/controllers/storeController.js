@@ -106,7 +106,7 @@ export const postMenu = async (req, res) => {
   const { type } = req.query; // 메뉴 종류, 단품/세트/기타
   const { quantity } = req.body;
   console.log(id, menu_id, type);
-  let cart = await Cart.findOne({
+  var cart = await Cart.findOne({
     where: {
       user_id: req.session.user.id,
       finished: false,
