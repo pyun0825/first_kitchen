@@ -3,43 +3,12 @@ import { Cart, Incart, Like } from "../../models";
 
 const JJ_IP = "192.168.100.65";
 
+/*
+ * 가계 상세 정보 조회
+ * 가계id 점주측으로 보내고 가계 정보, 메뉴들을 받아와 JSON Parse해주고 상세 정보 페이지 render
+ */
 export const getStore = async (req, res) => {
   const { id } = req.params; //==storeId
-  // 이때 id를 점주측에 보내주면 해당 가계의 모든 메뉴 정보 전달 받아야
-  // menu = {product_id, name, price, memo, isRecommended, type}
-  //가계 정보도 다 받아야 할듯
-  // store = {storeName, storeAddress, isOpen, fee}
-  // const store = {
-  //   store_id: id,
-  //   storeName: "Dummy Store",
-  //   storeAddress: "고려대로123",
-  //   isOpen: true,
-  //   fee: 2500,
-  // };
-  // const menu1 = {
-  //   product_id: 1,
-  //   name: "햄버거",
-  //   price: 7000,
-  //   memo: "맛있습니다",
-  //   isRecommended: true,
-  //   type: 0,
-  // };
-  // const menu2 = {
-  //   product_id: 2,
-  //   name: "피자",
-  //   price: 12000,
-  //   memo: "굿이에요",
-  //   isRecommended: true,
-  //   type: 0,
-  // };
-  // const menu3 = {
-  //   product_id: 3,
-  //   name: "치킨",
-  //   price: 9000,
-  //   memo: "좋아요",
-  //   isRecommended: false,
-  //   type: 0,
-  // };
   const apiResult = await axios.post(
     `http://${JJ_IP}:4000/consumer/getStoreInfo`,
     { data: { store_id: id } }
@@ -68,8 +37,11 @@ export const getStore = async (req, res) => {
   });
 };
 
+/*
+ * 가계 찜하기
+ * user-store 쌍을 좋아요 db에 저장
+ */
 export const postStore = (req, res) => {
-  //좋아요 버튼
   const { id } = req.params; //storeid
   const { submit } = req.body;
   if (submit === "Like") {
@@ -88,6 +60,10 @@ export const postStore = (req, res) => {
   return res.redirect(`/stores/${id}`);
 };
 
+/*
+ * 메뉴 상세 정보
+ * 메뉴id, type, 가계id 점주측 서버로 보내 메뉴 상세 정보 받아와 출력
+ */
 export const getMenu = async (req, res) => {
   const { id, menu_id } = req.params;
   const { type } = req.query; // 메뉴 종류, 단품/세트/기타
@@ -102,6 +78,11 @@ export const getMenu = async (req, res) => {
   });
 };
 
+/*
+ * 메뉴 장바구니에 넣기
+ * 유저가 주문 안한 장바구니 객체 있을 시 해당 장바구니에 추가. 없으면 장바구니 만들어서 추가
+ * 같은 메뉴 이미 장바구니에 있을 시 수량만 update
+ */
 export const postMenu = async (req, res) => {
   const { id, menu_id } = req.params;
   const { type } = req.query; // 메뉴 종류, 단품/세트/기타
