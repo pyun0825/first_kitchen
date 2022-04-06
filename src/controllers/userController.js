@@ -6,32 +6,12 @@ import webpush from "web-push";
 
 const JJ_IP = "192.168.100.65";
 
-// const store1 = {
-//   store_id: 1,
-//   storeName: "Hell's Kitchen",
-//   storeAddress: "고려대로28",
-//   isOpen: true,
-//   fee: 1000,
-// };
-// const store2 = {
-//   store_id: 2,
-//   storeName: "Burger King",
-//   storeAddress: "안암로123",
-//   isOpen: true,
-//   fee: 2500,
-// };
-// const store3 = {
-//   store_id: 3,
-//   storeName: "안암꼬치",
-//   storeAddress: "안암로1223",
-//   isOpen: false,
-//   fee: 3000,
-// };
-
+/*
+ * Home화면 render
+ * 사용자 주변 몇 km 이내 가계 정보 받아와서 출력
+ * 현재는 모든 가계 받아오도록
+ */
 export const home = async (req, res) => {
-  // 필요한 가계 정보 받아서 출력
-  // store = {store_id, storeName, storeAddress, isOpen}
-
   const apiRes = await axios
     .post(`http://${JJ_IP}:4000/consumer/getAllStore`)
     .catch(function (error) {
@@ -52,10 +32,18 @@ export const home = async (req, res) => {
   return res.render("home", { pageTitle: "First Kitchen", stores });
 };
 
+/*
+ * 로그인 페이지 render
+ */
 export const getLogin = (req, res) => {
   return res.render("login", { pageTitle: "Log In" });
 };
 
+/*
+ * 로그인 처리
+ * email로 db query해서 비밀번호 일치 시 session으로 로그인 처리하고 home으로 redirect.
+ * db에 해당 email 없거나 비밀번호 틀릴 시 alert창 띄운다.
+ */
 export const postLogin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({
@@ -85,10 +73,18 @@ export const postLogin = async (req, res) => {
   return res.redirect("/");
 };
 
+/*
+ * 회원가입 페이지 render
+ */
 export const getJoin = (req, res) => {
   return res.render("join", { pageTitle: "Join" });
 };
 
+/*
+ * 회원가입 처리
+ * Form으로 받어온 정보대로 db에 저장.
+ * 비밀번호1,2 불일치, 이메일 이미 존재 시 alert창 띄운다.
+ */
 export const postJoin = async (req, res) => {
   const { email, nickname, password, password2, tel } = req.body;
   if (password !== password2) {
@@ -125,11 +121,20 @@ export const postJoin = async (req, res) => {
   }
 };
 
+/*
+ * 로그아웃 처리
+ * session 삭제 후 home으로 redirect
+ */
 export const logout = (req, res) => {
   req.session.destroy();
   return res.redirect("/");
 };
 
+/*
+ * 장바구니 조회
+ * finished: False인 loggedin 유저의 장바구니 내 incarts(메뉴, 수량 정보)를 배열로 찾아 옴
+ * incarts들을 점주측 서버로 보내고 그 배열에 메뉴 이름, 가격, 가계 이름을 추가한 배열을 다시 받아 출력
+ */
 export const getCart = async (req, res) => {
   const cart = await Cart.findOne({
     where: {
@@ -146,28 +151,22 @@ export const getCart = async (req, res) => {
     },
     raw: true,
   });
-  console.log(incarts);
-  const menus = await axios.post(`http://${JJ_IP}:4000/consumer/getAllStore`, {
-    data: incarts,
-  });
-  const menu = {
-    product_id: 1,
-    name: "햄버거",
-    price: 7000,
-    memo: "맛있습니다",
-    isRecommended: true,
-    type: 0,
-  };
-  for (const i in incarts) {
-    incarts[i].name = menu.name;
-    incarts[i].price = menu.price;
-    incarts[i].store_name = "Store " + incarts[i].store_id; //store name 도 받아와야 할듯
-  }
-  const grouped = groupBy(incarts, "store_id");
+  const apiResult = await axios.post(
+    `http://${JJ_IP}:4000/consumer/getCartMenu`,
+    {
+      data: incarts,
+    }
+  );
+  const menus = JSON.parse(apiResult.data.incarts);
+  console.log(menus);
+  const grouped = groupBy(menus, "store_id");
   //그리고 page에 store 별로 메뉴 render
   return res.render("cart", { pageTitle: "Cart", grouped });
 };
 
+/*
+ * 장바구니 메뉴 삭제
+ */
 export const deleteCart = async (req, res) => {
   const { cart_id, incart_id } = req.query;
   await Incart.destroy({
@@ -179,6 +178,9 @@ export const deleteCart = async (req, res) => {
   return res.redirect("/user/cart");
 };
 
+/*
+ * 유저 profile 페이지
+ */
 export const getProfile = async (req, res) => {
   const { id } = req.session.user;
   //profile에 뭐 표시 할건지 생각
@@ -186,6 +188,9 @@ export const getProfile = async (req, res) => {
   return res.render("profile", { pageTitle: "Profile" });
 };
 
+/*
+ * 찜한 가계 목록 조회
+ */
 export const getLikes = async (req, res) => {
   const { id } = req.session.user;
   const likeArr = await Like.findAll({
@@ -199,6 +204,10 @@ export const getLikes = async (req, res) => {
   return res.render("likes", { pageTitle: "Likes", stores });
 };
 
+/*
+ * 주문 신청
+ *
+ */
 export const postCart = async (req, res) => {
   const { id } = req.session.user;
   const cart = await Cart.findOne({
@@ -259,6 +268,9 @@ export const postCart = async (req, res) => {
     });
 };
 
+/*
+ * 주문 상태 변경 처리
+ */
 export const postStatus = async (req, res) => {
   console.log("왔음");
   const { delivery_id, status } = req.body.data;
@@ -268,6 +280,8 @@ export const postStatus = async (req, res) => {
     },
   });
   if (!cart) {
+    console.log("주문내역 발견 실패!!!!");
+    return res.status(404);
   }
   const { subscription } = await User.findOne({
     where: {
@@ -281,7 +295,13 @@ export const postStatus = async (req, res) => {
   return res.status(201).json({});
 };
 
+/*
+ * Service Worker 등록
+ */
 export const postSubscribe = async (req, res) => {
+  if (!res.locals.loggedIn) {
+    return res.status(400).json({});
+  }
   const { id } = req.session.user;
   const subscription = req.body;
   await User.update(

@@ -1,6 +1,6 @@
 mixin cartMenu(menu)
     div.cart-menu
-        h4.cart-menu__name=menu.name 
+        h4.cart-menu__name=menu.menu_name 
         div.cart-menu__price=menu.price 
         div.cart-menu__quantity=menu.quantity 
         a(href=`/user/cart/delete?cart_id=${menu.cart_id}&incart_id=${menu.id}`) Delete 
