@@ -20,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
       tel: {
         type: DataTypes.STRING,
       },
+      subscription: {
+        type: DataTypes.JSON,
+      },
       // 위치 정보 needs to be added
     },
     {

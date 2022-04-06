@@ -1,6 +1,8 @@
 import axios from "axios";
 import { Cart, Incart, Like } from "../../models";
 
+const JJ_IP = "192.168.100.65";
+
 export const getStore = async (req, res) => {
   const { id } = req.params; //==storeId
   // 이때 id를 점주측에 보내주면 해당 가계의 모든 메뉴 정보 전달 받아야
@@ -39,7 +41,7 @@ export const getStore = async (req, res) => {
   //   type: 0,
   // };
   const apiResult = await axios.post(
-    `http://192.168.100.62:4000/consumer/getStoreInfo`,
+    `http://${JJ_IP}:4000/consumer/getStoreInfo`,
     { data: { store_id: id } }
   );
   const parsedRes = JSON.parse(apiResult.data.result);
@@ -90,10 +92,9 @@ export const getMenu = async (req, res) => {
   const { id, menu_id } = req.params;
   const { type } = req.query; // 메뉴 종류, 단품/세트/기타
   // get menu info from jj
-  const apiRes = await axios.post(
-    `http://192.168.100.62:4000/consumer/getMenuInfo`,
-    { data: { store_id: id, menu_id, menu_type: type } }
-  );
+  const apiRes = await axios.post(`http://${JJ_IP}:4000/consumer/getMenuInfo`, {
+    data: { store_id: id, menu_id, menu_type: type },
+  });
   res.render("menuInfo", {
     pageTitle: "메뉴 상세",
     menu: apiRes.data.menu,

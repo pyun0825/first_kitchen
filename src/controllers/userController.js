@@ -2,6 +2,9 @@ import bcrypt from "bcrypt";
 import { User, Cart, Incart, Like } from "../../models";
 import { groupBy } from "lodash";
 import axios from "axios";
+import webpush from "web-push";
+
+const JJ_IP = "192.168.100.65";
 
 // const store1 = {
 //   store_id: 1,
@@ -28,8 +31,9 @@ import axios from "axios";
 export const home = async (req, res) => {
   // 필요한 가계 정보 받아서 출력
   // store = {store_id, storeName, storeAddress, isOpen}
+
   const apiRes = await axios
-    .post(`http://192.168.100.62:4000/consumer/getAllStore`)
+    .post(`http://${JJ_IP}:4000/consumer/getAllStore`)
     .catch(function (error) {
       if (error.response) {
         // req, res 됐으나 res가 에러를 반환시 (status code != 2xx)
@@ -143,10 +147,9 @@ export const getCart = async (req, res) => {
     raw: true,
   });
   console.log(incarts);
-  const menus = await axios.post(
-    `http://192.168.100.62:4000/consumer/getAllStore`,
-    { data: incarts }
-  );
+  const menus = await axios.post(`http://${JJ_IP}:4000/consumer/getAllStore`, {
+    data: incarts,
+  });
   const menu = {
     product_id: 1,
     name: "햄버거",
@@ -234,7 +237,7 @@ export const postCart = async (req, res) => {
     memo: "WILL ADD",
     request: "WILL ADD",
     tel: req.session.user.tel,
-    payType: "None",
+    payType: 1,
     totalPaidPrice: 230000,
     totalPrice: 10100,
     discountPrice: 200,
@@ -242,7 +245,7 @@ export const postCart = async (req, res) => {
     orders: orders,
   };
   axios
-    .post(`http://192.168.100.62:4000/consumer/postDeliveryInfo`, {
+    .post(`http://${JJ_IP}:4000/consumer/postDeliveryInfo`, {
       data: sendingParams,
     })
     .then(function (response) {
@@ -256,4 +259,38 @@ export const postCart = async (req, res) => {
     });
 };
 
-export const postStatus = (req, res) => {};
+export const postStatus = async (req, res) => {
+  console.log("왔음");
+  const { delivery_id, status } = req.body.data;
+  const cart = await Cart.findOne({
+    where: {
+      delivery_id,
+    },
+  });
+  if (!cart) {
+  }
+  const { subscription } = await User.findOne({
+    where: {
+      id: cart.user_id,
+    },
+  });
+  const payload = JSON.stringify({ title: "Status changed" });
+  webpush
+    .sendNotification(subscription, payload)
+    .catch((err) => console.error(err));
+  return res.status(201).json({});
+};
+
+export const postSubscribe = async (req, res) => {
+  const { id } = req.session.user;
+  const subscription = req.body;
+  await User.update(
+    { subscription },
+    {
+      where: {
+        id,
+      },
+    }
+  );
+  res.status(201).json({});
+};

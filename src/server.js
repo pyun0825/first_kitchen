@@ -7,7 +7,18 @@ import rootRouter from "./routers/rootRouter";
 import { localsMiddleware } from "./middlewares";
 import storeRouter from "./routers/storeRouter";
 import userRouter from "./routers/userRouter";
+import webpush from "web-push";
+
 var MySQLStore = require("express-mysql-session")(session);
+
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+
+webpush.setVapidDetails(
+  "mailto:test@test.com",
+  publicVapidKey,
+  privateVapidKey
+);
 
 var options = {
   host: "localhost",
@@ -51,6 +62,7 @@ app.use(
 );
 app.use(localsMiddleware);
 app.use("/static", express.static("assets"));
+app.use("/", express.static("src"));
 app.use("/", rootRouter);
 app.use("/user", userRouter);
 app.use("/stores", storeRouter);
