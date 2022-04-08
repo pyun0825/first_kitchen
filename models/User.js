@@ -20,6 +20,24 @@ module.exports = (sequelize, DataTypes) => {
       tel: {
         type: DataTypes.STRING,
       },
+      jibunAddress: {
+        type: DataTypes.STRING,
+      },
+      roadAddress: {
+        type: DataTypes.STRING,
+      },
+      addressDetail: {
+        type: DataTypes.STRING,
+      },
+      latitude: {
+        type: DataTypes.DOUBLE,
+      },
+      longitude: {
+        type: DataTypes.DOUBLE,
+      },
+      addressDetail: {
+        type: DataTypes.STRING,
+      },
       subscription: {
         type: DataTypes.JSON,
       },

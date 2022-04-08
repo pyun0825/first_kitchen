@@ -77,7 +77,10 @@ export const postLogin = async (req, res) => {
  * 회원가입 페이지 render
  */
 export const getJoin = (req, res) => {
-  return res.render("join", { pageTitle: "Join" });
+  return res.render("join", {
+    pageTitle: "Join",
+    api_key: process.env.KAKAO_KEY,
+  });
 };
 
 /*
@@ -86,7 +89,18 @@ export const getJoin = (req, res) => {
  * 비밀번호1,2 불일치, 이메일 이미 존재 시 alert창 띄운다.
  */
 export const postJoin = async (req, res) => {
-  const { email, nickname, password, password2, tel } = req.body;
+  const {
+    email,
+    nickname,
+    password,
+    password2,
+    tel,
+    roadAddress,
+    jibunAddress,
+    addressDetail,
+    latitude,
+    longitude,
+  } = req.body;
   if (password !== password2) {
     return res
       .status(400)
@@ -113,6 +127,11 @@ export const postJoin = async (req, res) => {
       nickname,
       password,
       tel,
+      roadAddress,
+      jibunAddress,
+      addressDetail,
+      latitude,
+      longitude,
     });
     return res.redirect("/login");
   } catch (error) {
@@ -222,7 +241,8 @@ export const getLikes = async (req, res) => {
  *
  */
 export const postCart = async (req, res) => {
-  const { id } = req.session.user;
+  const { id, nickname, jibunAddress, roadAddress, addressDetail, tel } =
+    req.session.user;
   const carts = await Cart.findAll({
     where: {
       user_id: id,
@@ -245,22 +265,18 @@ export const postCart = async (req, res) => {
     //주문 답변 오면 finished true로
     const sendingParams = {
       store_id: carts[i].dataValues.store_id,
-      user_id: req.session.user.id,
-      user_nickname: req.session.user.nickname,
+      user_id: id,
+      user_nickname: nickname,
       deliveryApp: "First Kitchen",
       receptionType: "DELIVERY",
       orderTime: new Date(),
-      jibunAddress: "한글",
-      roadAddress: "NOT IN DB YET",
-      addressDetail: "NOT IN DB YET",
+      jibunAddress,
+      roadAddress,
+      addressDetail,
       memo: "WILL ADD",
       request: "WILL ADD",
-      tel: req.session.user.tel,
+      tel: tel,
       payType: 1,
-      // totalPaidPrice: 230000,
-      // totalPrice: 10100,
-      // discountPrice: 200,
-      // deliveryPrice: 1000,
       orders: orders,
     };
     axios

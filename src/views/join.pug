@@ -19,27 +19,44 @@ block content
             input.form-control#tel(type="tel", name="tel", placeholder="전화번호", required)
         
         div.form-group.mb-3
-            label(for="roadAddr") 도로명 주소
-            input.form-control#roadAddr(type="text", name="roadAddr", placeholder="도로명 주소", onclick="execDaumPostCode();", required, readonly)
+            label(for="roadAddress") 도로명 주소
+            input.form-control#roadAddress(type="text", name="roadAddress", placeholder="도로명 주소", onclick="execDaumPostCode();", required, readonly)
         div.form-group.mb-3
-            label(for="jibunAddr") 지번 주소
-            input.form-control#jibunAddr(type="text", name="jibunAddr", placeholder="도로명 주소", onclick="execDaumPostCode();", required, readonly)
+            label(for="jibunAddress") 지번 주소
+            input.form-control#jibunAddress(type="text", name="jibunAddress", placeholder="도로명 주소", onclick="execDaumPostCode();", required, readonly)
         div.form-group.mb-3
-            label(for="addrDetail") 상세 주소
-            input.form-control#addrDetail(type="text", name="addrDetail", placeholder="상세 주소", required)
+            label(for="addressDetail") 상세 주소
+            input.form-control#addressDetail(type="text", name="addressDetail", placeholder="상세 주소", required)
+
+        input#latitude(type="number", name="latitude", step="any", hidden)
+        input#longitude(type="number", name="longitude", step="any", hidden)
+
         input.btn.btn-primary(type="submit", value="Join")
     div
         span 이미 계정이 있으신가요? 
         a(href="/login") 로그인 &rarr;
 
+    script(src=`//dapi.kakao.com/v2/maps/sdk.js?appkey=${api_key}&libraries=services`)
     script(src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js") 
     script.
         function execDaumPostCode() {
             new daum.Postcode({
                 oncomplete: function(data) {
-                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-                    document.getElementById('roadAddr').value = data.roadAddress
-                    document.getElementById('jibunAddr').value = data.jibunAddress
+                    document.getElementById('roadAddress').value = data.roadAddress
+                    document.getElementById('jibunAddress').value = data.jibunAddress
+
+                    var geocoder = new kakao.maps.services.Geocoder();
+                    geocoder.addressSearch(data.address, function(result, status) {
+                        if (status === kakao.maps.services.Status.OK) {
+                            const {x, y} = result[0];
+                            document.getElementById('latitude').value = x;
+                            document.getElementById('longitude').value = y;
+                        } else {
+                            document.getElementById('latitude').value = -1;
+                            document.getElementById('longitude').value = -1;
+                            console.log('Cannot get coords.')
+                        }
+                    });
                 }
             }).open();
         }
