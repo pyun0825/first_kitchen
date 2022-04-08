@@ -257,10 +257,10 @@ export const postCart = async (req, res) => {
       request: "WILL ADD",
       tel: req.session.user.tel,
       payType: 1,
-      totalPaidPrice: 230000,
-      totalPrice: 10100,
-      discountPrice: 200,
-      deliveryPrice: 1000,
+      // totalPaidPrice: 230000,
+      // totalPrice: 10100,
+      // discountPrice: 200,
+      // deliveryPrice: 1000,
       orders: orders,
     };
     axios

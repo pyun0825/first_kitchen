@@ -1,13 +1,45 @@
 extends base.pug
 
-block content 
-    form(method="POST")
-        input(type="email", name="email", placeholder="이메일 주소", required)
-        input(type="text", name="nickname", placeholder="닉네임", required)
-        input(type="password", name="password", placeholder="비밀번호", required)
-        input(type="password", name="password2", placeholder="비밀번호 확인", required)
-        input(type="tel", name="tel", placeholder="전화번호", required)
-        input(type="submit", value="Join")
-    div 
-        span 이미 계정이 있으신가요?
+block content
+    form.w-50.mx-auto(method="POST")
+        div.form-group.mb-3
+            label(for="email") 이메일 주소
+            input.form-control#email(type="email", name="email", placeholder="이메일 주소", required)
+        div.form-group.mb-3
+            label(for="email") 닉네임
+            input.form-control#nickname(type="text", name="nickname", placeholder="닉네임", required)
+        div.form-group.mb-3
+            label(for="password") 비밀번호
+            input.form-control#password(type="password", name="password", placeholder="비밀번호", required)
+        div.form-group.mb-3
+            label(for="password2") 비밀번호 확인
+            input.form-control#password2(type="password", name="password2", placeholder="비밀번호 확인", required)
+        div.form-group.mb-3
+            label(for="tel") 전화번호
+            input.form-control#tel(type="tel", name="tel", placeholder="전화번호", required)
+        
+        div.form-group.mb-3
+            label(for="roadAddr") 도로명 주소
+            input.form-control#roadAddr(type="text", name="roadAddr", placeholder="도로명 주소", onclick="execDaumPostCode();", required, readonly)
+        div.form-group.mb-3
+            label(for="jibunAddr") 지번 주소
+            input.form-control#jibunAddr(type="text", name="jibunAddr", placeholder="도로명 주소", onclick="execDaumPostCode();", required, readonly)
+        div.form-group.mb-3
+            label(for="addrDetail") 상세 주소
+            input.form-control#addrDetail(type="text", name="addrDetail", placeholder="상세 주소", required)
+        input.btn.btn-primary(type="submit", value="Join")
+    div
+        span 이미 계정이 있으신가요? 
         a(href="/login") 로그인 &rarr;
+
+    script(src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js") 
+    script.
+        function execDaumPostCode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                    document.getElementById('roadAddr').value = data.roadAddress
+                    document.getElementById('jibunAddr').value = data.jibunAddress
+                }
+            }).open();
+        }
