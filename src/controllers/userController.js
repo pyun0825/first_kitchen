@@ -136,21 +136,26 @@ export const logout = (req, res) => {
  * incarts들을 점주측 서버로 보내고 그 배열에 메뉴 이름, 가격, 가계 이름을 추가한 배열을 다시 받아 출력
  */
 export const getCart = async (req, res) => {
-  const cart = await Cart.findOne({
+  const carts = await Cart.findAll({
     where: {
       user_id: req.session.user.id,
       finished: false,
     },
-  });
-  if (!cart) {
-    return res.render("cart", { pageTitle: "Cart", grouped: {} });
-  }
-  let incarts = await Incart.findAll({
-    where: {
-      cart_id: cart.id,
-    },
     raw: true,
   });
+  if (!carts) {
+    return res.render("cart", { pageTitle: "Cart", grouped: {} });
+  }
+  var incarts = [];
+  for (const i in carts) {
+    const incart = await Incart.findAll({
+      where: {
+        cart_id: carts[i].id,
+      },
+      raw: true,
+    });
+    incarts.push(...incart);
+  }
   const apiResult = await axios.post(
     `http://${JJ_IP}:4000/consumer/getCartMenu`,
     {
@@ -158,7 +163,6 @@ export const getCart = async (req, res) => {
     }
   );
   const menus = JSON.parse(apiResult.data.incarts);
-  console.log(menus);
   const grouped = groupBy(menus, "store_id");
   //그리고 page에 store 별로 메뉴 render
   return res.render("cart", { pageTitle: "Cart", grouped });
@@ -175,6 +179,15 @@ export const deleteCart = async (req, res) => {
       cart_id,
     },
   });
+  // Cart에 담긴 것이 없으면 삭제
+  const incarts = await Incart.findAll({ where: { cart_id }, raw: true });
+  if (incarts.length === 0) {
+    await Cart.destroy({
+      where: {
+        id: cart_id,
+      },
+    });
+  }
   return res.redirect("/user/cart");
 };
 
@@ -210,62 +223,59 @@ export const getLikes = async (req, res) => {
  */
 export const postCart = async (req, res) => {
   const { id } = req.session.user;
-  const cart = await Cart.findOne({
+  const carts = await Cart.findAll({
     where: {
       user_id: id,
       finished: false,
     },
+    raw: false,
   });
-  if (!cart) {
+  if (!carts) {
     //장바구니가 애초에 안 만들어졌을 때
-    console.log("장바구니에 든 제품이 없습니다!");
+    console.log("No carts available");
     return res.redirect("/");
   }
-  const orders = await Incart.findAll({
-    where: {
-      cart_id: cart.id,
-    },
-    raw: true,
-  });
-  if (orders.length === 0) {
-    // 장바구니 만들어졌으나 안에 내용물을 다 비웠을 때
-    console.log("장바구니에 든 제품이 없습니다!");
-    return res.redirect("/");
-  }
-  //주문 답변 오면 finished true로
-  const sendingParams = {
-    store_id: 1,
-    user_id: req.session.user.id,
-    user_nickname: req.session.user.nickname,
-    deliveryApp: "First Kitchen",
-    receptionType: "Delivery",
-    orderTime: new Date(),
-    jibunAddress: "한글",
-    roadAddress: "NOT IN DB YET",
-    addressDetail: "NOT IN DB YET",
-    memo: "WILL ADD",
-    request: "WILL ADD",
-    tel: req.session.user.tel,
-    payType: 1,
-    totalPaidPrice: 230000,
-    totalPrice: 10100,
-    discountPrice: 200,
-    deliveryPrice: 1000,
-    orders: orders,
-  };
-  axios
-    .post(`http://${JJ_IP}:4000/consumer/postDeliveryInfo`, {
-      data: sendingParams,
-    })
-    .then(function (response) {
-      const delivery_id = response.data.id;
-      cart.update({ finished: true, delivery_id, orderTime: new Date() });
-      return res.redirect("/");
-    })
-    .catch(function (error) {
-      console.log(error);
-      return res.redirect("/");
+  for (const i in carts) {
+    const orders = await Incart.findAll({
+      where: {
+        cart_id: carts[i].dataValues.id,
+      },
+      raw: true,
     });
+    //주문 답변 오면 finished true로
+    const sendingParams = {
+      store_id: carts[i].dataValues.store_id,
+      user_id: req.session.user.id,
+      user_nickname: req.session.user.nickname,
+      deliveryApp: "First Kitchen",
+      receptionType: "DELIVERY",
+      orderTime: new Date(),
+      jibunAddress: "한글",
+      roadAddress: "NOT IN DB YET",
+      addressDetail: "NOT IN DB YET",
+      memo: "WILL ADD",
+      request: "WILL ADD",
+      tel: req.session.user.tel,
+      payType: 1,
+      totalPaidPrice: 230000,
+      totalPrice: 10100,
+      discountPrice: 200,
+      deliveryPrice: 1000,
+      orders: orders,
+    };
+    axios
+      .post(`http://${JJ_IP}:4000/consumer/postDeliveryInfo`, {
+        data: sendingParams,
+      })
+      .then(function (response) {
+        const delivery_id = response.data.id;
+        carts[i].update({ finished: true, delivery_id, orderTime: new Date() });
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+  return res.redirect("/");
 };
 
 /*
@@ -288,7 +298,10 @@ export const postStatus = async (req, res) => {
       id: cart.user_id,
     },
   });
-  const payload = JSON.stringify({ title: "Status changed" });
+  const payload = JSON.stringify({
+    title: "First Kitchen",
+    body: `주문 상태가 변경되었습니다!`,
+  });
   webpush
     .sendNotification(subscription, payload)
     .catch((err) => console.error(err));

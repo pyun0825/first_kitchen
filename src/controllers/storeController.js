@@ -87,16 +87,17 @@ export const postMenu = async (req, res) => {
   const { id, menu_id } = req.params;
   const { type } = req.query; // 메뉴 종류, 단품/세트/기타
   const { quantity } = req.body;
-  console.log(id, menu_id, type);
   var cart = await Cart.findOne({
     where: {
       user_id: req.session.user.id,
+      store_id: id,
       finished: false,
     },
   });
   if (!cart) {
     cart = await Cart.create({
       user_id: req.session.user.id,
+      store_id: id,
     });
   }
   const prevAdded = await Incart.findOne({

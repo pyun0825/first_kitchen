@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      store_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       orderTime: {
         type: DataTypes.DATE,
       },
