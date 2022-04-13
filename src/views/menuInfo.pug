@@ -1,10 +1,14 @@
 extends base
 
 block content 
-    div.menu-info
-        span.menu-info__title=menu.name
-        p.menu-info__description=menu.memo
-        span.menu-info__price=menu.price
-    form(method="post") 
-        input(type="number", name="quantity", value="1", required)
-        input(type="submit", value="장바구니에 담기", min="0")
+    div.menu-info.w-100.mx-auto
+        img.w-100.rounded(src="https://picsum.photos/1000/500")
+        div.menu-info__box.shadow
+            span.menu-info__title=menu.name
+            p.menu-info__description=menu.memo
+        span.menu-info__price-title 가격
+        span.menu-info__price #{menu.price}원
+        form.w-100(method="post")
+            label.quantity-label(for="quantity") 수량
+            input.form-control.w-auto#quantity(type="number", name="quantity", value="1", required)
+            input.tocartBtn.btn.btn-primary.w-auto(type="submit", value="장바구니에 담기", min="0")

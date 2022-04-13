@@ -19,6 +19,62 @@ a {
   font-weight: 600;
 }
 
+/* menuInfo */
+.menu-info {
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.menu-info > form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0px;
+}
+.tocartBtn {
+  margin: 10px 0px;
+}
+.menu-info__box {
+  position: relative;
+  top: -50px;
+  width: 80%;
+  padding: 5px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+}
+.menu-info__title {
+  font-size: 30px;
+  font-weight: 600;
+  margin: 10px 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.menu-info__description {
+  text-align: center;
+}
+
+.menu-info__price-title {
+  font-size: 25px;
+  font-weight: 600;
+}
+
+.menu-info__price {
+  margin-bottom: 10px;
+}
+
+.quantity-label {
+  font-size: 25px;
+  font-weight: 600;
+}
+#quantity {
+  margin: 5px 0px;
+}
+
 /* store mixin */
 .store-grid {
   display: grid;
