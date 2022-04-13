@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Cart, Incart, Like } from "../../models";
 
-const JJ_IP = "192.168.100.65";
+const JJ_IP = "192.168.100.71";
 
 /*
  * 가계 상세 정보 조회

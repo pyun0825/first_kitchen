@@ -1,7 +1,7 @@
 extends base.pug
 
 block content
-    form.w-50.mx-auto(method="POST")
+    form.join-form.w-100.mx-auto(method="POST")
         div.form-group.mb-3
             label(for="email") 이메일 주소
             input.form-control#email(type="email", name="email", placeholder="이메일 주소", required)
@@ -31,10 +31,10 @@ block content
         input#latitude(type="number", name="latitude", step="any", hidden)
         input#longitude(type="number", name="longitude", step="any", hidden)
 
-        input.btn.btn-primary(type="submit", value="Join")
-    div
-        span 이미 계정이 있으신가요? 
-        a(href="/login") 로그인 &rarr;
+        input.btn.btn-primary.mb-3(type="submit", value="Join")
+        div
+            span 이미 계정이 있으신가요? 
+            a(href="/login") 로그인 &rarr;
 
     script(src=`//dapi.kakao.com/v2/maps/sdk.js?appkey=${api_key}&libraries=services`)
     script(src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js") 

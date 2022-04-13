@@ -1,6 +1,8 @@
 header.navbar.navbar-expand-lg.navbar-light.bg-light.px-3.mb-3
     a(href="/").navbar-brand First Kitchen 
-    nav 
+    button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarSupportedContent", aria-controls="navbarSupportedContent", aria-expanded="false", aria-label="Toggle navigation")
+        span.navbar-toggler-icon
+    div.collapse.navbar-collapse#navbarSupportedContent
         ul.navbar-nav
             if loggedIn 
                 li.nav-item

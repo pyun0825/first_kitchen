@@ -4,7 +4,7 @@ import { groupBy } from "lodash";
 import axios from "axios";
 import webpush from "web-push";
 
-const JJ_IP = "192.168.100.65";
+const JJ_IP = "192.168.100.71";
 
 /*
  * Home화면 render
@@ -144,7 +144,9 @@ export const postJoin = async (req, res) => {
  * 로그아웃 처리
  * session 삭제 후 home으로 redirect
  */
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+  const { id } = req.session.user;
+  await User.update({ subscription: null }, { where: { id } });
   req.session.destroy();
   return res.redirect("/");
 };
@@ -298,8 +300,8 @@ export const postCart = async (req, res) => {
  * 주문 상태 변경 처리
  */
 export const postStatus = async (req, res) => {
-  console.log("왔음");
   const { delivery_id, status } = req.body.data;
+  const statusArr = ["주문", "접수", "완료", "완료", "환불", "환불"];
   const cart = await Cart.findOne({
     where: {
       delivery_id,
@@ -314,14 +316,33 @@ export const postStatus = async (req, res) => {
       id: cart.user_id,
     },
   });
-  const payload = JSON.stringify({
-    title: "First Kitchen",
-    body: `주문 상태가 변경되었습니다!`,
-  });
-  webpush
-    .sendNotification(subscription, payload)
-    .catch((err) => console.error(err));
+  if (subscription) {
+    // Subscription 저장돼 있을 시 - Log Out 하지 않았으면
+    const payload = JSON.stringify({
+      title: "First Kitchen",
+      body: `주문이 ${statusArr[status]}되었습니다!`,
+    });
+    webpush
+      .sendNotification(subscription, payload)
+      .catch((err) => console.error(err));
+  }
   return res.status(201).json({});
+};
+
+export const getCurrentDelivery = async (req, res) => {
+  const { id } = req.session.user;
+  axios
+    .post(`http://${JJ_IP}:4000/consumer/`, {
+      data: { user_id: id },
+    })
+    .then(function (response) {
+      const inDelivery = response.data;
+      return res.render("currentDelivery", { inDelivery });
+    })
+    .catch(function (error) {
+      console.log(error);
+      return res.redirect("/");
+    });
 };
 
 /*
@@ -333,6 +354,7 @@ export const postSubscribe = async (req, res) => {
   }
   const { id } = req.session.user;
   const subscription = req.body;
+  console.log("Subscription Received..");
   await User.update(
     { subscription },
     {
@@ -341,5 +363,6 @@ export const postSubscribe = async (req, res) => {
       },
     }
   );
+  console.log(`User: ${id} subscription updated`);
   res.status(201).json({});
 };

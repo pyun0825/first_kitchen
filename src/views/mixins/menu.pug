@@ -1,6 +1,6 @@
 mixin menu(store_id, menu)
-    a(href=`/stores/${store_id}/${menu.id}?type=${menu.type}`).menu-mixin
+    a(href=`/stores/${store_id}/${menu.id}?type=${menu.type}`).menu-mixin.shadow-sm.rounded.p-4.mb-3.w-100.mx-3
         div.menu__desc
             span.menu__title=menu.name 
-            span.menu__price=menu.price 
+            span.menu__price #{menu.price}원
             
