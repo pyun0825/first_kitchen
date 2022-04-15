@@ -1,3 +1,7 @@
+* {
+  font-family: "Noto Sans KR", sans-serif;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -118,4 +122,92 @@ a {
 
 #to-cart:hover {
   opacity: 1;
+}
+
+/* Cart */
+.cart__store {
+  padding: 15px;
+  max-width: 800px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.cart__store-name {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.order-btn {
+  width: 100px;
+  margin: 0 auto;
+  display: block;
+  padding: 10px;
+  font-weight: 600;
+}
+
+/* cartMenu mixin */
+.cart-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border: 2px solid rgba(66, 66, 66, 0.1);
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+.cart-menu__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.cart-menu__name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+
+.cart-menu__price {
+}
+
+.cart-menu__quantity {
+}
+
+.cart-menu__delete {
+  color: gray;
+}
+
+/* currentDelivery */
+.total_price {
+  font-size: 16px;
+  font-weight: 600;
+}
+.status {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* curDeliveryMenu mixin */
+.delivery-menu {
+  margin: 5px 0px;
+}
+.delivery-menu__name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 0px;
+}
+.delivery-menu__quantity {
+  font-size: 16px;
+  color: rgb(208, 170, 170);
+}
+
+/* like button */
+.like-btn {
+  background: inherit;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  color: crimson;
 }

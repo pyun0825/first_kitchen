@@ -3,14 +3,13 @@ include mixins/cartMenu
 
 block content 
     each store in grouped
-        div.cart__store
+        div.cart__store.mx-auto.my-5.shadow
             h4.cart__store-name=store[0].store_name
             each menu in store 
                 +cartMenu(menu)
-                hr
             else 
                 span.empty__message 장바구니에 담은 메뉴가 없습니다!
     else 
         span.empty__message 장바구니에 담은 메뉴가 없습니다!
-    form(method="post") 
-        input(type="submit", value="Order")
+    form.w-100(method="post") 
+        input.order-btn.btn.btn-primary(type="submit", value="주문")

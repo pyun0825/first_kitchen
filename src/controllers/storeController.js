@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Cart, Incart, Like } from "../../models";
 
-const JJ_IP = "192.168.100.71";
+const JJ_IP = "192.168.100.83";
 
 /*
  * 가계 상세 정보 조회
@@ -19,7 +19,6 @@ export const getStore = async (req, res) => {
   parsedRes[2].map((x) => (x["type"] = 1));
   parsedRes[3].map((x) => (x["type"] = 2));
   let menus = [...parsedRes[1], ...parsedRes[2], ...parsedRes[3]];
-  console.log(parsedRes[1]);
   let like = null;
   if (req.session.loggedIn) {
     like = await Like.findOne({

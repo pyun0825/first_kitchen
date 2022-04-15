@@ -1,5 +1,25 @@
 extends base
+include mixins/curDeliveryMenu
 
 block content 
-    each cart in inDelivery
-        
+    each store in inDelivery
+        div.cart__store.mx-auto.my-3.shadow
+            h4.cart__store-name=store.store_name
+            each menu in store.menu 
+                +deliveryMenu(menu)
+            hr
+            h5.total_price 총액: #{store.total_price}원
+            case store.status
+                when 0 
+                    h5.status 주문 대기 중
+                    - break
+                when 1
+                    h5.status 주문 접수
+                    - break
+                when 2
+                when 3
+                    h5.status 주문 완료
+                    - break
+                default 
+                    h5.status 에러...
+                

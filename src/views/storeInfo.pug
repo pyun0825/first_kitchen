@@ -8,9 +8,13 @@ block content
             h3.store-info__title=store.storeName 
             form(method="post")
                 if like 
-                    input(type="submit", name="submit", value="Unlike")
+                    input(type="text", name="submit", value="Unlike", hidden)
+                    button.like-btn(type="submit")
+                        i.fa-solid.fa-heart.fa-xl
                 else 
-                    input(type="submit", name="submit", value="Like")
+                    input(type="text", name="submit", value="Like", hidden)
+                    button.like-btn(type="submit")
+                        i.fa-regular.fa-heart.fa-xl
             div.store-info__rating ★ to be added 
             div.store-info__fee 배달팁 #{store.deliveryPrice}원
         div.menu-grid.d-flex.flex-column.align-items-center.w-100

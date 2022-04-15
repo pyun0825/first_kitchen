@@ -1,6 +1,9 @@
 mixin cartMenu(menu)
     div.cart-menu
-        h4.cart-menu__name=menu.menu_name 
-        div.cart-menu__price=menu.price 
-        div.cart-menu__quantity=menu.quantity 
-        a(href=`/user/cart/delete?cart_id=${menu.cart_id}&incart_id=${menu.id}`) Delete 
+        div.cart-menu__header
+            h4.cart-menu__name=menu.menu_name 
+            a.cart-menu__delete(href=`/user/cart/delete?cart_id=${menu.cart_id}&incart_id=${menu.id}`)
+                i.fa-solid.fa-xmark.fa-lg
+        div.cart-menu__info
+            div.cart-menu__price #{menu.price}원 
+            div.cart-menu__quantity 수량: #{menu.quantity} 

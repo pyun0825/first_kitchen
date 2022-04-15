@@ -4,7 +4,7 @@ import { groupBy } from "lodash";
 import axios from "axios";
 import webpush from "web-push";
 
-const JJ_IP = "192.168.100.71";
+const JJ_IP = "192.168.100.83";
 
 /*
  * Home화면 render
@@ -329,14 +329,18 @@ export const postStatus = async (req, res) => {
   return res.status(201).json({});
 };
 
+/*
+ * 진행중인 주문 상황 조회
+ */
 export const getCurrentDelivery = async (req, res) => {
   const { id } = req.session.user;
   axios
-    .post(`http://${JJ_IP}:4000/consumer/`, {
+    .post(`http://${JJ_IP}:4000/consumer/getProceedingDelivery`, {
       data: { user_id: id },
     })
     .then(function (response) {
-      const inDelivery = response.data;
+      const inDelivery = JSON.parse(response.data.result);
+      console.log(inDelivery, inDelivery[0].menu);
       return res.render("currentDelivery", { inDelivery });
     })
     .catch(function (error) {
