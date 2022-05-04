@@ -9,6 +9,8 @@ header.navbar.navbar-expand-lg.navbar-light.bg-light.px-3.mb-3
                     a(href=`/user/${loggedInUser.id}`).nav-link=loggedInUser.nickname
                 li.nav-item 
                     a(href="/user/currentdelivery").nav-link 현재 주문
+                li.nav-item 
+                    a(href="/user/prevDelivery").nav-link 주문 내역
                 li.nav-item
                     a(href="/logout").nav-link Log Out 
             else 

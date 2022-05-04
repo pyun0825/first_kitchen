@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import { User, Cart, Incart, Like } from "../../models";
 import { groupBy } from "lodash";
-import axios from "axios";
+import axios, { Axios } from "axios";
 import webpush from "web-push";
 
-const JJ_IP = "192.168.100.83";
+const JJ_IP = "192.168.100.73";
 
 /*
  * Home화면 render
@@ -340,8 +340,28 @@ export const getCurrentDelivery = async (req, res) => {
     })
     .then(function (response) {
       const inDelivery = JSON.parse(response.data.result);
-      console.log(inDelivery, inDelivery[0].menu);
       return res.render("currentDelivery", { inDelivery });
+    })
+    .catch(function (error) {
+      console.log(error);
+      return res.redirect("/");
+    });
+};
+
+/*
+ * 과거 주문 내역 조회
+ */
+export const getPrevDelivery = async (req, res) => {
+  const { id } = req.session.user;
+  axios
+    .get(`http://${JJ_IP}:4000/consumer/getFinishedDelivery`, {
+      params: {
+        user_id: id,
+      },
+    })
+    .then(function (response) {
+      const prevDeliveries = JSON.parse(response.data.result);
+      return res.render("prevDelivery", { prevDeliveries });
     })
     .catch(function (error) {
       console.log(error);
