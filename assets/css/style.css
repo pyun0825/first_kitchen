@@ -211,3 +211,52 @@ a {
   padding: 0;
   color: crimson;
 }
+
+/* Review form */
+.review-form {
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.review-form #review {
+}
+
+.review-form .review-text {
+  text-align: center;
+}
+
+.review-form fieldset {
+  display: inline-block;
+  direction: rtl;
+  border: 0;
+}
+.review-form fieldset legend {
+  text-align: center;
+}
+.review-form fieldset .stars {
+  display: flex;
+  justify-content: center;
+}
+.review-form input[type="radio"] {
+  display: none;
+}
+.review-form label {
+  font-size: 3em;
+  color: transparent;
+  text-shadow: 0 0 0 #f0f0f0;
+}
+.review-form input[type="radio"]:checked ~ label {
+  text-shadow: 0 0 0 #ffc700;
+}
+.review-form label:hover {
+  text-shadow: 0 0 0 #deb217;
+}
+.review-form label:hover ~ label {
+  text-shadow: 0 0 0 #deb217;
+}
+.review-submit {
+  width: 200px;
+}

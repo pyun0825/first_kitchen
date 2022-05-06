@@ -1,0 +1,20 @@
+extends base.pug 
+
+block content 
+    form.review-form.w-100.mx-auto(method="POST")
+        h4.review-text.my-3 사장님께 드릴 리뷰
+        textarea.form-control#review(name="review", rows=5, placeholder="리뷰를 작성해 주세요!")
+        fieldset.rating-field.my-3
+            legend 별점을 선택해 주세요
+            div.stars
+                input#rate1(type="radio", name="rating", value="5") 
+                label(for="rate1") ⭐
+                input#rate2(type="radio", name="rating", value="4") 
+                label(for="rate2") ⭐
+                input#rate3(type="radio", name="rating", value="3") 
+                label(for="rate3") ⭐
+                input#rate4(type="radio", name="rating", value="2") 
+                label(for="rate4") ⭐
+                input#rate5(type="radio", name="rating", value="1") 
+                label(for="rate5") ⭐
+        input.btn.btn-primary.review-submit(type="submit", value="리뷰 작성")

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import { User, Cart, Incart, Like } from "../../models";
-import { groupBy } from "lodash";
+import { User, Cart, Incart, Like, Review } from "../../models";
+import { endsWith, groupBy, toInteger } from "lodash";
 import axios, { Axios } from "axios";
 import webpush from "web-push";
 
@@ -12,8 +12,16 @@ const JJ_IP = "192.168.100.73";
  * 현재는 모든 가계 받아오도록
  */
 export const home = async (req, res) => {
+  let x = null;
+  let y = null;
+  if (req.session.loggedIn) {
+    x = req.session.user.longitude;
+    y = req.session.user.latitude;
+  }
   const apiRes = await axios
-    .post(`http://${JJ_IP}:4000/consumer/getAllStore`)
+    .post(`http://${JJ_IP}:4000/consumer/getAllStore`, {
+      data: { x, y },
+    })
     .catch(function (error) {
       if (error.response) {
         // req, res 됐으나 res가 에러를 반환시 (status code != 2xx)
@@ -361,12 +369,49 @@ export const getPrevDelivery = async (req, res) => {
     })
     .then(function (response) {
       const prevDeliveries = JSON.parse(response.data.result);
+      console.log(prevDeliveries);
       return res.render("prevDelivery", { prevDeliveries });
     })
     .catch(function (error) {
       console.log(error);
       return res.redirect("/");
     });
+};
+
+/*
+ * 리뷰 작성 페이지 get
+ */
+export const getWriteReview = async (req, res) => {
+  return res.render("writeReview");
+};
+
+/*
+ * 리뷰 작성
+ */
+export const postWriteReview = async (req, res) => {
+  const { id: user_id } = req.session.user;
+  const { delivery_id } = req.params;
+  const cart = await Cart.findOne({ where: { id: delivery_id } });
+  //로그인한 유저와 리뷰 작성할 수 있는 유저 다를 시
+  if (cart.user_id !== user_id) {
+    return res.status(400).redirect("/");
+  }
+  const review_content = req.body.review;
+  const rating = toInteger(req.body.rating);
+  try {
+    await Review.create({
+      user_id,
+      store_id: cart.store_id,
+      cart_id: delivery_id,
+      review_content,
+      rating,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).redirect("/");
+  }
+  //어디로 보내야할까?
+  return res.status(200).redirect("/");
 };
 
 /*

@@ -55,6 +55,9 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Like, {
       foreignKey: "user_id",
     });
+    User.hasMany(models.Review, {
+      foreignKey: "user_id",
+    });
   };
   User.beforeSave(async (user, options) => {
     if (user.changed("password")) {

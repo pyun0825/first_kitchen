@@ -10,15 +10,10 @@ block content
             hr
             h5.total_price 총액: #{store.total_price}원
             case store.status
-                when 0 
-                    h5.status 주문 대기 중
-                    - break
-                when 1
-                    h5.status 주문 접수
-                    - break
                 when 2
                 when 3
                     h5.status 주문 완료
+                    a(href=`/user/writereview/${store.delivery_id}`).btn.btn-primary 리뷰쓰기 
                     - break
                 when 4
                 when 5
