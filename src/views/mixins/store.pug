@@ -4,7 +4,7 @@ mixin store(store)
         div.store-mixin__desc.card-body
             h5.store-mixin__title.card-title=store.storeName
             div.store-mixin__rating ⭐ #{store.rating.toFixed(2)} (#{store.rating_count > 100 ? '100+' : store.rating_count})
-            div.store-mixin__distance 거리 0.0km
+            div.store-mixin__distance 거리 #{store.distance.toFixed(2)}KM
             div.store-mixin__fee 배달팁 #{store.deliveryPrice}원
 
 
