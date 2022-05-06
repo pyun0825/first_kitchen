@@ -49,8 +49,8 @@ block content
                     geocoder.addressSearch(data.address, function(result, status) {
                         if (status === kakao.maps.services.Status.OK) {
                             const {x, y} = result[0];
-                            document.getElementById('latitude').value = x;
-                            document.getElementById('longitude').value = y;
+                            document.getElementById('latitude').value = y;
+                            document.getElementById('longitude').value = x;
                         } else {
                             document.getElementById('latitude').value = -1;
                             document.getElementById('longitude').value = -1;

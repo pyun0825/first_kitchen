@@ -1,5 +1,6 @@
 import axios from "axios";
-import { Cart, Incart, Like } from "../../models";
+import { Cart, Incart, Like, sequelize } from "../../models";
+import { QueryTypes } from "sequelize";
 
 const JJ_IP = "192.168.100.73";
 
@@ -14,7 +15,18 @@ export const getStore = async (req, res) => {
     { data: { store_id: id } }
   );
   const parsedRes = JSON.parse(apiResult.data.result);
+  const [found] = await sequelize.query(
+    `SELECT avg(rating) as rating, count(*) as count FROM reviews WHERE store_id = ${id} GROUP BY store_id`,
+    { type: QueryTypes.SELECT }
+  );
   const store = parsedRes[0];
+  if (found) {
+    store.rating = parseFloat(found.rating);
+    store.rating_count = found.count;
+  } else {
+    store.rating = 0;
+    store.rating_count = 0;
+  }
   parsedRes[1].map((x) => (x["type"] = 0));
   parsedRes[2].map((x) => (x["type"] = 1));
   parsedRes[3].map((x) => (x["type"] = 2));

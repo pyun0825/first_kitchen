@@ -13,7 +13,10 @@ block content
                 when 2
                 when 3
                     h5.status 주문 완료
-                    a(href=`/user/writereview/${store.delivery_id}`).btn.btn-primary 리뷰쓰기 
+                    if store.is_reviewed
+                        span.review-fin-text 리뷰 작성 완료
+                    else
+                        a(href=`/user/writereview/${store.delivery_id}`).btn.btn-primary 리뷰쓰기 
                     - break
                 when 4
                 when 5

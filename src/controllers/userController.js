@@ -37,16 +37,22 @@ export const home = async (req, res) => {
         return res.render("home", { pageTitle: "First Kitchen", stores: [] });
       }
     });
-  const stores = apiRes.data.store;
-  console.log(stores);
+  console.log(apiRes.data.answer);
+  const stores = apiRes.data.answer;
   const reviews = await sequelize.query(
     "SELECT store_id, avg(rating) as rating, count(*) as count FROM reviews GROUP BY store_id",
     { type: QueryTypes.SELECT }
   );
+  console.log(reviews);
   stores.forEach((store) => {
     const found = reviews.find((review) => review.store_id === store.id);
-    store.rating = parseFloat(found.rating);
-    store.rating_count = toInteger(found.count);
+    if (found) {
+      store.rating = parseFloat(found.rating);
+      store.rating_count = toInteger(found.count);
+    } else {
+      store.rating = 0;
+      store.rating_count = 0;
+    }
   });
   return res.render("home", { pageTitle: "First Kitchen", stores });
 };
@@ -330,6 +336,11 @@ export const postStatus = async (req, res) => {
     console.log("주문내역 발견 실패!!!!");
     return res.status(404);
   }
+  await Review.destroy({
+    where: {
+      cart_id: cart.id,
+    },
+  });
   const { subscription } = await User.findOne({
     where: {
       id: cart.user_id,
@@ -378,9 +389,14 @@ export const getPrevDelivery = async (req, res) => {
         user_id: id,
       },
     })
-    .then(function (response) {
+    .then(async function (response) {
       const prevDeliveries = JSON.parse(response.data.result);
-      console.log(prevDeliveries);
+      for (const delivery of prevDeliveries) {
+        const cart = await Cart.findOne({
+          where: { delivery_id: delivery.delivery_id },
+        });
+        delivery.is_reviewed = cart.is_reviewed;
+      }
       return res.render("prevDelivery", { prevDeliveries });
     })
     .catch(function (error) {
@@ -417,6 +433,8 @@ export const postWriteReview = async (req, res) => {
       review_content,
       rating,
     });
+    cart.is_reviewed = true;
+    cart.save();
   } catch (error) {
     console.log(error);
     return res.status(400).redirect("/");
