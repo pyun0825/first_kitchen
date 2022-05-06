@@ -1,8 +1,9 @@
 import bcrypt from "bcrypt";
-import { User, Cart, Incart, Like, Review } from "../../models";
+import { User, Cart, Incart, Like, Review, sequelize } from "../../models";
 import { endsWith, groupBy, toInteger } from "lodash";
 import axios, { Axios } from "axios";
 import webpush from "web-push";
+import { QueryTypes } from "sequelize";
 
 const JJ_IP = "192.168.100.73";
 
@@ -37,6 +38,16 @@ export const home = async (req, res) => {
       }
     });
   const stores = apiRes.data.store;
+  console.log(stores);
+  const reviews = await sequelize.query(
+    "SELECT store_id, avg(rating) as rating, count(*) as count FROM reviews GROUP BY store_id",
+    { type: QueryTypes.SELECT }
+  );
+  stores.forEach((store) => {
+    const found = reviews.find((review) => review.store_id === store.id);
+    store.rating = parseFloat(found.rating);
+    store.rating_count = toInteger(found.count);
+  });
   return res.render("home", { pageTitle: "First Kitchen", stores });
 };
 
@@ -391,7 +402,7 @@ export const getWriteReview = async (req, res) => {
 export const postWriteReview = async (req, res) => {
   const { id: user_id } = req.session.user;
   const { delivery_id } = req.params;
-  const cart = await Cart.findOne({ where: { id: delivery_id } });
+  const cart = await Cart.findOne({ where: { delivery_id } });
   //로그인한 유저와 리뷰 작성할 수 있는 유저 다를 시
   if (cart.user_id !== user_id) {
     return res.status(400).redirect("/");
@@ -402,7 +413,7 @@ export const postWriteReview = async (req, res) => {
     await Review.create({
       user_id,
       store_id: cart.store_id,
-      cart_id: delivery_id,
+      cart_id: cart.id,
       review_content,
       rating,
     });
