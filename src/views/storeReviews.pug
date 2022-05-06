@@ -1,0 +1,9 @@
+extends base.pug
+include mixins/review
+
+block content 
+    h3.review-storeName=storeName
+    each review in reviews
+        +review(review)
+    else 
+        span.empty__message 등록된 리뷰가 없습니다!

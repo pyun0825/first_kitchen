@@ -22,6 +22,9 @@ a {
   font-size: 40px;
   font-weight: 600;
 }
+.view-reviews {
+  color: rgb(0, 46, 183);
+}
 
 /* menuInfo */
 .menu-info {
@@ -187,6 +190,12 @@ a {
   font-size: 16px;
   font-weight: 600;
 }
+.delivery-title {
+  width: 100%;
+  text-align: center;
+  font-size: 40px;
+  font-weight: 600;
+}
 
 /* curDeliveryMenu mixin */
 .delivery-menu {
@@ -259,4 +268,51 @@ a {
 }
 .review-submit {
   width: 200px;
+}
+
+/* storeReviews */
+.review-storeName {
+  width: 100%;
+  text-align: center;
+  font-size: 40px;
+  font-weight: 600;
+}
+/* Mixin review */
+.review {
+  border-radius: 10px;
+  padding: 10px;
+  margin: 25px 5px;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.review__user {
+  width: 100%;
+  text-align: center;
+  font-size: 21px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+}
+.review__content {
+  padding: 3px 0px;
+}
+.review__rating {
+  font-weight: 600;
+}
+.review__date {
+  font-size: 14px;
+  font-style: italic;
+  opacity: 0.5;
+}
+
+.empty__message {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin: 10px 0px;
 }

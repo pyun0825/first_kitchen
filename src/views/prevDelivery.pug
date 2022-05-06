@@ -2,6 +2,7 @@ extends base.pug
 include mixins/curDeliveryMenu
 
 block content 
+    h3.delivery-title 주문 내역
     each store in prevDeliveries
         div.cart__store.mx-auto.my-3.shadow
             h4.cart__store-name=store.store_name

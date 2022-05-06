@@ -336,11 +336,13 @@ export const postStatus = async (req, res) => {
     console.log("주문내역 발견 실패!!!!");
     return res.status(404);
   }
-  await Review.destroy({
-    where: {
-      cart_id: cart.id,
-    },
-  });
+  if (status === 4 || status === 5) {
+    await Review.destroy({
+      where: {
+        cart_id: cart.id,
+      },
+    });
+  }
   const { subscription } = await User.findOne({
     where: {
       id: cart.user_id,

@@ -1,0 +1,6 @@
+mixin review(review)
+    div.review.mx-auto.shadow
+        span.review__user=review["User.nickname"]
+        span.review__content=review.review_content 
+        span.review__rating ⭐#{review.rating.toFixed(2)}
+        span.review__date=review.createdAt.toGMTString()

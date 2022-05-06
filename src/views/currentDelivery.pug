@@ -2,6 +2,7 @@ extends base
 include mixins/curDeliveryMenu
 
 block content 
+    h3.delivery-title 현재 주문
     each store in inDelivery
         div.cart__store.mx-auto.my-3.shadow
             h4.cart__store-name=store.store_name

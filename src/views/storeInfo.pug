@@ -15,7 +15,8 @@ block content
                     input(type="text", name="submit", value="Like", hidden)
                     button.like-btn(type="submit")
                         i.fa-regular.fa-heart.fa-xl
-            div.store-info__rating ⭐ #{store.rating.toFixed(2)} (#{store.rating_count > 100 ? '100+' : store.rating_count}) 
+            div.store-info__rating ⭐ #{store.rating.toFixed(2)} (#{store.rating_count > 100 ? '100+' : store.rating_count})
+                a.view-reviews(href=`/stores/${store.id}/${store.storeName}/reviews`)  리뷰조회
             div.store-info__fee 배달팁 #{store.deliveryPrice}원
         div.menu-grid.d-flex.flex-column.align-items-center.w-100
             each menu in menus 

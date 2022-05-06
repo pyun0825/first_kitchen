@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Cart, Incart, Like, sequelize } from "../../models";
 import { QueryTypes } from "sequelize";
+import { Review, User } from "../../models";
 
 const JJ_IP = "192.168.100.73";
 
@@ -138,4 +139,18 @@ export const postMenu = async (req, res) => {
     );
   }
   return res.redirect(`/stores/${id}`);
+};
+
+/*
+ * 가게 리뷰 정보 조회
+ */
+export const getStoreReviews = async (req, res) => {
+  const { id, storeName } = req.params;
+  const reviews = await Review.findAll({
+    include: [{ model: User }],
+    order: [["createdAt", "DESC"]],
+    where: { store_id: id },
+    raw: true,
+  });
+  return res.status(200).render("storeReviews", { storeName, reviews });
 };
