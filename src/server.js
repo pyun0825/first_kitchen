@@ -62,7 +62,7 @@ app.use(
 );
 app.use(localsMiddleware);
 app.use("/static", express.static("assets"));
-app.use("/", express.static("src"));
+app.use("/", express.static("src")); //worker.js 클라이언트에서 등록할 때 경로 root이어야 함 -> '/worker.js' 이해하도록
 app.use("/", rootRouter);
 app.use("/user", userRouter);
 app.use("/stores", storeRouter);

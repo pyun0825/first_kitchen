@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { User, Cart, Incart, Like, Review, sequelize } from "../../models";
-import { endsWith, groupBy, toInteger } from "lodash";
+import { endsWith, groupBy, toArray, toInteger } from "lodash";
 import axios, { Axios } from "axios";
 import webpush from "web-push";
 import { QueryTypes } from "sequelize";
@@ -35,6 +35,8 @@ function deg2rad(deg) {
  * 현재는 모든 가계 받아오도록
  */
 export const home = async (req, res) => {
+  let { distSort, ratingSort } = req.query;
+  console.log(distSort, ratingSort);
   let x = null;
   let y = null;
   if (req.session.loggedIn) {
@@ -59,13 +61,15 @@ export const home = async (req, res) => {
         return res.render("home", { pageTitle: "First Kitchen", stores: [] });
       }
     });
-  console.log(apiRes.data.answer);
   const stores = apiRes.data.answer;
+  if (!stores) {
+    console.log("가게 정보 null");
+    return res.render("home", { pageTitle: "First Kitchen", stores: [] });
+  }
   const reviews = await sequelize.query(
     "SELECT store_id, avg(rating) as rating, count(*) as count FROM reviews GROUP BY store_id",
     { type: QueryTypes.SELECT }
   );
-  console.log(reviews);
   stores.forEach((store) => {
     const found = reviews.find((review) => review.store_id === store.id);
     if (found) {
@@ -83,6 +87,22 @@ export const home = async (req, res) => {
       store.longitude
     );
   });
+  toArray(stores);
+  if (distSort && ratingSort) {
+    // 둘다 체크 된 경우 -> 불가능, url로 이렇게 접근시 무효 처리
+    distSort = null;
+    ratingSort = null;
+  } else if (distSort === "1") {
+    stores.sort(function (a, b) {
+      return a.distance - b.distance;
+    });
+  } else if (ratingSort === "1") {
+    stores.sort(function (a, b) {
+      return b.rating - a.rating;
+    });
+  }
+  res.locals.distSort = distSort;
+  res.locals.ratingSort = ratingSort;
   return res.render("home", { pageTitle: "First Kitchen", stores });
 };
 

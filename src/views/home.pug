@@ -1,7 +1,16 @@
 extends base.pug
 include mixins/store
 
-block content 
+block content
+    div.btn-group.mb-3
+        if distSort == "1"
+            a(href="/", checked).btn.btn-primary 가까운 순
+        else
+            a(href="/?distSort=1", checked).btn.btn-outline-primary 가까운 순
+        if ratingSort == "1"
+            a(href="/").btn.btn-success 평점 높은 순
+        else 
+            a(href="/?ratingSort=1").btn.btn-outline-success 평점 높은 순
     div.store-grid
         each store in stores 
             +store(store)

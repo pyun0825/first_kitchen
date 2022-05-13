@@ -15,7 +15,7 @@ block content
                 when 3
                     h5.status 주문 완료
                     if store.is_reviewed
-                        span.review-fin-text 리뷰 작성 완료
+                        span.review-fin-text.btn.btn-secondary 리뷰 작성 완료
                     else
                         a(href=`/user/writereview/${store.delivery_id}`).btn.btn-primary 리뷰쓰기 
                     - break
