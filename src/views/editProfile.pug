@@ -1,0 +1,57 @@
+extends base.pug
+
+block content
+    form.join-form.w-100.mx-auto(method="POST")
+        div.form-group.mb-3
+            label(for="email") 이메일 주소
+            input.form-control#email(type="email", name="email", placeholder="이메일 주소", value=`${user.email}`, required, disabled)
+        div.form-group.mb-3
+            label(for="email") 닉네임
+            input.form-control#nickname(type="text", name="nickname", placeholder="닉네임", value=`${user.nickname}`, required)
+        div.form-group.mb-3
+            label(for="password") 현재 비밀번호
+            input.form-control#password(type="password", name="password", placeholder="비밀번호", required)
+        div.form-group.mb-3
+            label(for="tel") 전화번호
+            input.form-control#tel(type="tel", name="tel", placeholder="전화번호", value=`${user.tel}`, required)
+        
+        div.form-group.mb-3
+            label(for="roadAddress") 도로명 주소
+            input.form-control#roadAddress(type="text", name="roadAddress", placeholder="도로명 주소", onclick="execDaumPostCode();", value=`${user.roadAddress}`, required, readonly)
+        div.form-group.mb-3
+            label(for="jibunAddress") 지번 주소
+            input.form-control#jibunAddress(type="text", name="jibunAddress", placeholder="도로명 주소", onclick="execDaumPostCode();", value=`${user.jibunAddress}` required, readonly)
+        div.form-group.mb-3
+            label(for="addressDetail") 상세 주소
+            input.form-control#addressDetail(type="text", name="addressDetail", placeholder="상세 주소", value=`${user.addressDetail}`, required)
+
+        input#latitude(type="number", name="latitude", step="any", value=user.latitude, hidden)
+        input#longitude(type="number", name="longitude", step="any", value=user.longitude, hidden)
+
+        input.btn.btn-primary.mb-3(type="submit", value="Edit")
+
+    script(src=`//dapi.kakao.com/v2/maps/sdk.js?appkey=${api_key}&libraries=services`)
+    script(src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js") 
+    script.
+        function execDaumPostCode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    document.getElementById('roadAddress').value = data.roadAddress
+                    document.getElementById('jibunAddress').value = data.jibunAddress
+
+                    var geocoder = new kakao.maps.services.Geocoder();
+                    geocoder.addressSearch(data.address, function(result, status) {
+                        if (status === kakao.maps.services.Status.OK) {
+                            const {x, y} = result[0];
+                            document.getElementById('latitude').value = y;
+                            document.getElementById('longitude').value = x;
+                            console.log(typeof x);
+                        } else {
+                            document.getElementById('latitude').value = -1;
+                            document.getElementById('longitude').value = -1;
+                            console.log('Cannot get coords.')
+                        }
+                    });
+                }
+            }).open();
+        }

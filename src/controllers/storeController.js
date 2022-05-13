@@ -16,11 +16,18 @@ export const getStore = async (req, res) => {
     { data: { store_id: id } }
   );
   const parsedRes = JSON.parse(apiResult.data.result);
+  const store = parsedRes[0];
+  if (store.isOpen == 0) {
+    return res
+      .status(400)
+      .send(
+        "<script>alert('영업 준비 중인 가게입니다!'); window.location.replace('/');</script>"
+      );
+  }
   const [found] = await sequelize.query(
     `SELECT avg(rating) as rating, count(*) as count FROM reviews WHERE store_id = ${id} GROUP BY store_id`,
     { type: QueryTypes.SELECT }
   );
-  const store = parsedRes[0];
   if (found) {
     store.rating = parseFloat(found.rating);
     store.rating_count = found.count;

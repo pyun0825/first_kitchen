@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { User, Cart, Incart, Like, Review, sequelize } from "../../models";
-import { endsWith, groupBy, toArray, toInteger } from "lodash";
+import { add, endsWith, groupBy, toArray, toInteger } from "lodash";
 import axios, { Axios } from "axios";
 import webpush from "web-push";
 import { QueryTypes } from "sequelize";
@@ -36,12 +36,12 @@ function deg2rad(deg) {
  */
 export const home = async (req, res) => {
   let { distSort, ratingSort } = req.query;
-  console.log(distSort, ratingSort);
   let x = null;
   let y = null;
   if (req.session.loggedIn) {
     x = req.session.user.longitude;
     y = req.session.user.latitude;
+    console.log(typeof x);
   }
   const apiRes = await axios
     .post(`http://${JJ_IP}:4000/consumer/getAllStore`, {
@@ -290,10 +290,81 @@ export const deleteCart = async (req, res) => {
  * 유저 profile 페이지
  */
 export const getProfile = async (req, res) => {
-  const { id } = req.session.user;
+  let { id: param_id } = req.params;
+  let { id: session_id } = req.session.user;
+  param_id = toInteger(param_id);
   //profile에 뭐 표시 할건지 생각
   //edit profile, change pw, 좋아요 목록
-  return res.render("profile", { pageTitle: "Profile" });
+  if (param_id === session_id)
+    return res.render("profile", { pageTitle: "Profile", id: session_id });
+  else {
+    return res
+      .status(400)
+      .send(
+        "<script>alert('로그인 한 계정과 조회하려는 계정이 일치하지 않습니다!'); window.location.replace('/');</script>"
+      );
+  }
+};
+
+/**
+ * 유저 프로파일 (배송 주소 등 수정)
+ */
+export const getEditProfile = async (req, res) => {
+  let { id: param_id } = req.params;
+  let { id: session_id } = req.session.user;
+  param_id = toInteger(param_id);
+  if (param_id === session_id) {
+    return res.render("editProfile", {
+      pageTitle: "Edit Profile",
+      user: req.session.user,
+      api_key: process.env.KAKAO_KEY,
+    });
+  } else {
+    return res
+      .status(400)
+      .send(
+        "<script>alert('로그인 한 계정과 수정하려는 계정이 일치하지 않습니다!'); window.location.replace('/');</script>"
+      );
+  }
+};
+
+/**
+ * 유저 프로파일 수정
+ */
+export const postEditProfile = async (req, res) => {
+  const { id } = req.session.user;
+  const {
+    email,
+    nickname,
+    password,
+    tel,
+    roadAddress,
+    jibunAddress,
+    addressDetail,
+    latitude,
+    longitude,
+  } = req.body;
+  const user = await User.findOne({ where: { id } });
+  const ok = await bcrypt.compare(password, user.password);
+  if (!ok) {
+    console.log("password incorrect");
+    return res
+      .status(400)
+      .send(
+        `<script>alert('패스워드가 틀립니다.'); window.location.replace('/user/${id}/edit');</script>`
+      );
+  }
+  user.nickname = nickname;
+  user.tel = tel;
+  user.roadAddress = roadAddress;
+  user.jibunAddress = jibunAddress;
+  user.addressDetail = addressDetail;
+  user.latitude = parseFloat(latitude);
+  user.longitude = parseFloat(longitude);
+  user.save();
+  req.session.loggedIn = true;
+  req.session.user = user;
+  return res.status(200).redirect("/");
 };
 
 /*
