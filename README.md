@@ -5,6 +5,7 @@
 
 - 개발 중 - Currently in development
 - 점주측 서버가 열려야 작동 가능 - Has to run parallel to the Shop owner side's server
+[점주측 서비스](https://github.com/jungjaechoi/firstKitchen_back)
 
 
 ## 사용 기술
