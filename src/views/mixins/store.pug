@@ -1,11 +1,20 @@
 mixin store(store)
-    a(href=`/stores/${store.id}`).store-mixin.card
-        img.card-img-top(src="https://picsum.photos/350/150")
-        div.store-mixin__desc.card-body
-            h5.store-mixin__title.card-title=store.storeName
-            div.store-mixin__rating ⭐ #{store.rating.toFixed(2)} (#{store.rating_count > 100 ? '100+' : store.rating_count})
-            div.store-mixin__distance 거리 #{store.distance.toFixed(2)}KM
-            div.store-mixin__fee 배달팁 #{store.deliveryPrice}원
+    if store.isOpen == 1
+        a(href=`/stores/${store.id}`).store-mixin.card
+            img.card-img-top(src="https://picsum.photos/350/150")
+            div.store-mixin__desc.card-body
+                h5.store-mixin__title.card-title=store.storeName
+                div.store-mixin__rating ⭐ #{store.rating.toFixed(2)} (#{store.rating_count > 100 ? '100+' : store.rating_count})
+                div.store-mixin__distance 거리 #{store.distance.toFixed(2)}KM
+                div.store-mixin__fee 배달팁 #{store.deliveryPrice}원
+    else 
+        a(href=`/stores/${store.id}`).store-mixin.card.store-closed
+            img.card-img-top(src="https://picsum.photos/350/150")
+            div.store-mixin__desc.card-body
+                h5.store-mixin__title.card-title=store.storeName
+                div.store-mixin__rating ⭐ #{store.rating.toFixed(2)} (#{store.rating_count > 100 ? '100+' : store.rating_count})
+                div.store-mixin__distance 거리 #{store.distance.toFixed(2)}KM
+                div.store-mixin__fee 배달팁 #{store.deliveryPrice}원
 
 
 
