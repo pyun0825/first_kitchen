@@ -345,6 +345,13 @@ export const postEditProfile = async (req, res) => {
     longitude,
   } = req.body;
   const user = await User.findOne({ where: { id } });
+  if (!user) {
+    return res
+      .status(400)
+      .send(
+        "<script>alert('변경하려는 유저 정보를 찾을 수 없습니다!'); window.location.replace('/');</script>"
+      );
+  }
   const ok = await bcrypt.compare(password, user.password);
   if (!ok) {
     console.log("password incorrect");
@@ -364,6 +371,61 @@ export const postEditProfile = async (req, res) => {
   user.save();
   req.session.loggedIn = true;
   req.session.user = user;
+  return res.status(200).redirect("/");
+};
+
+/**
+ * 비밀번호 변경 페이지
+ */
+export const getChangePassword = (req, res) => {
+  let { id: param_id } = req.params;
+  let { id: session_id } = req.session.user;
+  param_id = toInteger(param_id);
+  if (param_id === session_id) {
+    return res.render("changePassword", {
+      pageTitle: "Change Password",
+    });
+  } else {
+    return res
+      .status(400)
+      .send(
+        "<script>alert('로그인 한 계정과 수정하려는 계정이 일치하지 않습니다!'); window.location.replace('/');</script>"
+      );
+  }
+};
+
+/**
+ * 비밀번호 변경 요청 처리
+ */
+export const postChangePassword = async (req, res) => {
+  const { id } = req.session.user;
+  const { cur_password, new_password, new_password2 } = req.body;
+  let user = await User.findOne({ where: { id } });
+  if (!user) {
+    return res
+      .status(400)
+      .send(
+        "<script>alert('변경하려는 유저 정보를 찾을 수 없습니다!'); window.location.replace('/');</script>"
+      );
+  }
+  const ok = await bcrypt.compare(cur_password, user.password);
+  if (!ok) {
+    console.log("password incorrect");
+    return res
+      .status(400)
+      .send(
+        `<script>alert('패스워드가 틀립니다.'); window.location.replace('/user/${id}/edit');</script>`
+      );
+  }
+  if (new_password !== new_password2) {
+    return res
+      .status(400)
+      .send(
+        "<script>alert('패스워드가 일치하지 않습니다.'); window.location.replace('/join');</script>"
+      );
+  }
+  user.password = new_password;
+  user.save();
   return res.status(200).redirect("/");
 };
 
