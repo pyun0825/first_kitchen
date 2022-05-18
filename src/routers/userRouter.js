@@ -40,6 +40,7 @@ userRouter
   .all(protectorMiddleware)
   .get(getChangePassword)
   .post(postChangePassword);
+userRouter.get("/:id/likes", protectorMiddleware, getLikes);
 // uri를 id를 query로 하여 설정했는데 handler에서는 session id를 쓰기 때문에 쓸모 없음.. query로 id 찾아서 하면 다른 유저 profile들어갈 수도 있음
 userRouter.get("/:id", protectorMiddleware, getProfile);
 

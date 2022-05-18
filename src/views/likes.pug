@@ -2,7 +2,7 @@ extends base
 include mixins/store
 
 block content 
-    h3.likes-title 찜한 가계
+    h3.likes-title.mb-3 찜한 가계
     div.store-grid
         each store in stores 
             +store(store)

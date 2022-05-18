@@ -41,7 +41,6 @@ export const home = async (req, res) => {
   if (req.session.loggedIn) {
     x = req.session.user.longitude;
     y = req.session.user.latitude;
-    console.log(typeof x);
   }
   const apiRes = await axios
     .post(`http://${JJ_IP}:4000/consumer/getAllStore`, {
@@ -259,6 +258,12 @@ export const getCart = async (req, res) => {
   );
   const menus = JSON.parse(apiResult.data.incarts);
   const grouped = groupBy(menus, "store_id");
+  // for (let stores in grouped) {
+  //   grouped[stores].push(
+  //     grouped[stores].reduce((prev, curr) => prev.price + curr.price)
+  //   );
+  // }
+  console.log(grouped);
   //그리고 page에 store 별로 메뉴 render
   return res.render("cart", { pageTitle: "Cart", grouped });
 };
@@ -435,13 +440,61 @@ export const postChangePassword = async (req, res) => {
 export const getLikes = async (req, res) => {
   const { id } = req.session.user;
   const likeArr = await Like.findAll({
+    attributes: ["store_id"],
     where: {
       user_id: id,
     },
     raw: true,
   });
+  const storeIdList = likeArr.map((x) => x.store_id);
+  const x = req.session.user.longitude;
+  const y = req.session.user.latitude;
+  const apiRes = await axios
+    .get(`http://${JJ_IP}:4000/consumer/getLikeStore`, {
+      params: { storeIdList },
+    })
+    .catch(function (error) {
+      if (error.response) {
+        // req, res 됐으나 res가 에러를 반환시 (status code != 2xx)
+        console.log("점주측 서버 에러 - 가계정보 못받아옴", error.response);
+        return res.render("likes", { pageTitle: "Likes", stores: [] });
+      } else if (error.request) {
+        // res 없음, 통신 두절
+        console.log("통신 두절 - 가계정보 못받아옴", error.request);
+        return res.render("likes", { pageTitle: "Likes", stores: [] });
+      } else {
+        console.log("Error", error.message);
+        return res.render("likes", { pageTitle: "Likes", stores: [] });
+      }
+    });
+  const stores = apiRes.data.answer;
+  if (!stores) {
+    console.log("가게 정보 null");
+    return res.render("likes", { pageTitle: "Likes", stores: [] });
+  }
+  const reviews = await sequelize.query(
+    "SELECT store_id, avg(rating) as rating, count(*) as count FROM reviews GROUP BY store_id",
+    { type: QueryTypes.SELECT }
+  );
+  stores.forEach((store) => {
+    const found = reviews.find((review) => review.store_id === store.id);
+    if (found) {
+      store.rating = parseFloat(found.rating);
+      store.rating_count = toInteger(found.count);
+    } else {
+      store.rating = 0;
+      store.rating_count = 0;
+    }
+    store.distance = getDistanceFromLatLonInKm(
+      y,
+      x,
+      store.latitude,
+      store.longitude
+    );
+  });
+  toArray(stores);
   //Like 한 store_id 들 jj로 보내고 관련 store 정보 home화면과 같이 받아온다.
-  let stores = [store1, store2, store3];
+  // let stores = [store1, store2, store3];
   return res.render("likes", { pageTitle: "Likes", stores });
 };
 

@@ -5,10 +5,13 @@ block content
     each store in grouped
         div.cart__store.mx-auto.my-5.shadow
             h4.cart__store-name=store[0].store_name
+            - var sum = 0
             each menu in store 
                 +cartMenu(menu)
+                - sum += menu.price*menu.quantity
             else 
                 span.empty__message 장바구니에 담은 메뉴가 없습니다!
+            h5.cart_store-total.mt-3 총액: #{sum}원 + 배달비
     else 
         span.empty__message 장바구니에 담은 메뉴가 없습니다!
     form.w-100(method="post") 

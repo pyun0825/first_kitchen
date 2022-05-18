@@ -10,5 +10,5 @@ block content
         span.menu-info__price #{menu.price}원
         form.w-100(method="post")
             label.quantity-label(for="quantity") 수량
-            input.form-control.w-auto#quantity(type="number", name="quantity", value="1", required)
-            input.tocartBtn.btn.btn-primary.w-auto(type="submit", value="장바구니에 담기", min="0")
+            input.form-control.w-auto#quantity(type="number", name="quantity", value="1", min="1", required)
+            input.tocartBtn.btn.btn-primary.w-auto(type="submit", value="장바구니에 담기")
