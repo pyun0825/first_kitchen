@@ -24,6 +24,13 @@
 
 
 ## 기능 (Features)
+
+- 사용자 설정 배송지 3km 이내 가게들만 조회 (가까운 순, 별점 순 sort 가능)
+- 기본적인 좋아요 기능, 리뷰 기능들 모두 구현
+- 현재 주문 내역에서 배달 완료 전인 주문들 조회 가능
+- 주문 내역에서 주문 완료/환불 된 주문 내역 조회 가능 (주문 완료된 건에 한해서 리뷰 작성 가능, 환불 시 리뷰 삭제)
+- 점주 측에서 주문 상태 변경 시 push notification 오도록 구현 (using service worker)
+
 ### 홈 화면
 <img src="https://user-images.githubusercontent.com/42465137/167795466-dc2df987-597f-4329-85a5-81c42fd4956c.png" width="250"/>
 
