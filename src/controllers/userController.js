@@ -5,7 +5,8 @@ import axios, { Axios } from "axios";
 import webpush from "web-push";
 import { QueryTypes } from "sequelize";
 
-const JJ_IP = "192.168.100.73";
+const NGROK_IP = "https://793f-121-128-252-18.jp.ngrok.io";
+const JJ_IP = "http://192.168.1.1:4000";
 
 /*
  * 두 좌표 사이 거리
@@ -42,9 +43,54 @@ export const home = async (req, res) => {
     x = req.session.user.longitude;
     y = req.session.user.latitude;
   }
-  const apiRes = await axios
-    .post(`http://${JJ_IP}:4000/consumer/getAllStore`, {
+  axios
+    .post(`https://${JJ_IP}/consumer/getAllStore`, {
       data: { x, y },
+    })
+    .then(async (response) => {
+      const stores = response.data.answer;
+      if (!stores) {
+        console.log("가게 정보 null");
+        return res.render("home", { pageTitle: "First Kitchen", stores: [] });
+      }
+      const reviews = await sequelize.query(
+        "SELECT store_id, avg(rating) as rating, count(*) as count FROM reviews GROUP BY store_id",
+        { type: QueryTypes.SELECT }
+      );
+      stores.forEach((store) => {
+        const found = reviews.find((review) => review.store_id === store.id);
+        if (found) {
+          store.rating = parseFloat(found.rating);
+          store.rating_count = toInteger(found.count);
+        } else {
+          store.rating = 0;
+          store.rating_count = 0;
+        }
+        console.log(store);
+        store.distance = getDistanceFromLatLonInKm(
+          y,
+          x,
+          store.latitude,
+          store.longitude
+        );
+      });
+      toArray(stores);
+      if (distSort && ratingSort) {
+        // 둘다 체크 된 경우 -> 불가능, url로 이렇게 접근시 무효 처리
+        distSort = null;
+        ratingSort = null;
+      } else if (distSort === "1") {
+        stores.sort(function (a, b) {
+          return a.distance - b.distance;
+        });
+      } else if (ratingSort === "1") {
+        stores.sort(function (a, b) {
+          return b.rating - a.rating;
+        });
+      }
+      res.locals.distSort = distSort;
+      res.locals.ratingSort = ratingSort;
+      return res.render("home", { pageTitle: "First Kitchen", stores });
     })
     .catch(function (error) {
       if (error.response) {
@@ -60,49 +106,6 @@ export const home = async (req, res) => {
         return res.render("home", { pageTitle: "First Kitchen", stores: [] });
       }
     });
-  const stores = apiRes.data.answer;
-  if (!stores) {
-    console.log("가게 정보 null");
-    return res.render("home", { pageTitle: "First Kitchen", stores: [] });
-  }
-  const reviews = await sequelize.query(
-    "SELECT store_id, avg(rating) as rating, count(*) as count FROM reviews GROUP BY store_id",
-    { type: QueryTypes.SELECT }
-  );
-  stores.forEach((store) => {
-    const found = reviews.find((review) => review.store_id === store.id);
-    if (found) {
-      store.rating = parseFloat(found.rating);
-      store.rating_count = toInteger(found.count);
-    } else {
-      store.rating = 0;
-      store.rating_count = 0;
-    }
-    console.log(store);
-    store.distance = getDistanceFromLatLonInKm(
-      y,
-      x,
-      store.latitude,
-      store.longitude
-    );
-  });
-  toArray(stores);
-  if (distSort && ratingSort) {
-    // 둘다 체크 된 경우 -> 불가능, url로 이렇게 접근시 무효 처리
-    distSort = null;
-    ratingSort = null;
-  } else if (distSort === "1") {
-    stores.sort(function (a, b) {
-      return a.distance - b.distance;
-    });
-  } else if (ratingSort === "1") {
-    stores.sort(function (a, b) {
-      return b.rating - a.rating;
-    });
-  }
-  res.locals.distSort = distSort;
-  res.locals.ratingSort = ratingSort;
-  return res.render("home", { pageTitle: "First Kitchen", stores });
 };
 
 /*
@@ -250,12 +253,9 @@ export const getCart = async (req, res) => {
     });
     incarts.push(...incart);
   }
-  const apiResult = await axios.post(
-    `http://${JJ_IP}:4000/consumer/getCartMenu`,
-    {
-      data: incarts,
-    }
-  );
+  const apiResult = await axios.post(`https://${JJ_IP}/consumer/getCartMenu`, {
+    data: incarts,
+  });
   const menus = JSON.parse(apiResult.data.incarts);
   const grouped = groupBy(menus, "store_id");
   // for (let stores in grouped) {
@@ -450,7 +450,7 @@ export const getLikes = async (req, res) => {
   const x = req.session.user.longitude;
   const y = req.session.user.latitude;
   const apiRes = await axios
-    .get(`http://${JJ_IP}:4000/consumer/getLikeStore`, {
+    .get(`https://${JJ_IP}/consumer/getLikeStore`, {
       params: { storeIdList },
     })
     .catch(function (error) {
@@ -542,7 +542,7 @@ export const postCart = async (req, res) => {
       orders: orders,
     };
     axios
-      .post(`http://${JJ_IP}:4000/consumer/postDeliveryInfo`, {
+      .post(`https://${JJ_IP}/consumer/postDeliveryInfo`, {
         data: sendingParams,
       })
       .then(function (response) {
@@ -602,7 +602,7 @@ export const postStatus = async (req, res) => {
 export const getCurrentDelivery = async (req, res) => {
   const { id } = req.session.user;
   axios
-    .post(`http://${JJ_IP}:4000/consumer/getProceedingDelivery`, {
+    .post(`https://${JJ_IP}/consumer/getProceedingDelivery`, {
       data: { user_id: id },
     })
     .then(function (response) {
@@ -621,7 +621,7 @@ export const getCurrentDelivery = async (req, res) => {
 export const getPrevDelivery = async (req, res) => {
   const { id } = req.session.user;
   axios
-    .get(`http://${JJ_IP}:4000/consumer/getFinishedDelivery`, {
+    .get(`https://${JJ_IP}/consumer/getFinishedDelivery`, {
       params: {
         user_id: id,
       },
@@ -700,4 +700,12 @@ export const postSubscribe = async (req, res) => {
   );
   console.log(`User: ${id} subscription updated`);
   res.status(201).json({});
+};
+
+export const getMonthlyUser = async (req, res) => {
+  const user_count = await sequelize.query(
+    "SELECT count(*) as count FROM users where MONTH(createdAt) = MONTH(CURRENT_DATE()) AND YEAR(createdAt) = YEAR(CURRENT_DATE())",
+    { type: QueryTypes.SELECT }
+  );
+  res.send(user_count[0].count);
 };

@@ -6,6 +6,7 @@ import {
   getCurrentDelivery,
   getEditProfile,
   getLikes,
+  getMonthlyUser,
   getPrevDelivery,
   getProfile,
   getWriteReview,
@@ -19,6 +20,7 @@ import { protectorMiddleware } from "../middlewares";
 
 const userRouter = express.Router();
 
+userRouter.get("/monthlycount", getMonthlyUser);
 userRouter.route("/cart").all(protectorMiddleware).get(getCart).post(postCart);
 userRouter.get("/cart/delete", protectorMiddleware, deleteCart);
 userRouter.get("/likes", protectorMiddleware, getLikes);

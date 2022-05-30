@@ -3,7 +3,7 @@ import { Cart, Incart, Like, sequelize } from "../../models";
 import { QueryTypes } from "sequelize";
 import { Review, User } from "../../models";
 
-const JJ_IP = "192.168.100.73";
+const JJ_IP = "793f-121-128-252-18.jp.ngrok.io/";
 
 /*
  * 가계 상세 정보 조회
@@ -11,10 +11,9 @@ const JJ_IP = "192.168.100.73";
  */
 export const getStore = async (req, res) => {
   const { id } = req.params; //==storeId
-  const apiResult = await axios.post(
-    `http://${JJ_IP}:4000/consumer/getStoreInfo`,
-    { data: { store_id: id } }
-  );
+  const apiResult = await axios.post(`https://${JJ_IP}consumer/getStoreInfo`, {
+    data: { store_id: id },
+  });
   const parsedRes = JSON.parse(apiResult.data.result);
   const store = parsedRes[0];
   if (store.isOpen == 0) {
@@ -87,7 +86,7 @@ export const getMenu = async (req, res) => {
   const { id, menu_id } = req.params;
   const { type } = req.query; // 메뉴 종류, 단품/세트/기타
   // get menu info from jj
-  const apiRes = await axios.post(`http://${JJ_IP}:4000/consumer/getMenuInfo`, {
+  const apiRes = await axios.post(`https://${JJ_IP}consumer/getMenuInfo`, {
     data: { store_id: id, menu_id, menu_type: type },
   });
   res.render("menuInfo", {
