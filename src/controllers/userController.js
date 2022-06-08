@@ -6,7 +6,7 @@ import webpush from "web-push";
 import { QueryTypes } from "sequelize";
 
 const NGROK_IP = "https://793f-121-128-252-18.jp.ngrok.io";
-const JJ_IP = "http://192.168.1.1:4000";
+const JJ_IP = "http://192.168.100.57:4000";
 
 /*
  * 두 좌표 사이 거리
@@ -44,7 +44,7 @@ export const home = async (req, res) => {
     y = req.session.user.latitude;
   }
   axios
-    .post(`https://${JJ_IP}/consumer/getAllStore`, {
+    .post(`${JJ_IP}/consumer/getAllStore`, {
       data: { x, y },
     })
     .then(async (response) => {
@@ -253,7 +253,7 @@ export const getCart = async (req, res) => {
     });
     incarts.push(...incart);
   }
-  const apiResult = await axios.post(`https://${JJ_IP}/consumer/getCartMenu`, {
+  const apiResult = await axios.post(`${JJ_IP}/consumer/getCartMenu`, {
     data: incarts,
   });
   const menus = JSON.parse(apiResult.data.incarts);
@@ -450,7 +450,7 @@ export const getLikes = async (req, res) => {
   const x = req.session.user.longitude;
   const y = req.session.user.latitude;
   const apiRes = await axios
-    .get(`https://${JJ_IP}/consumer/getLikeStore`, {
+    .get(`${JJ_IP}/consumer/getLikeStore`, {
       params: { storeIdList },
     })
     .catch(function (error) {
@@ -542,7 +542,7 @@ export const postCart = async (req, res) => {
       orders: orders,
     };
     axios
-      .post(`https://${JJ_IP}/consumer/postDeliveryInfo`, {
+      .post(`${JJ_IP}/consumer/postDeliveryInfo`, {
         data: sendingParams,
       })
       .then(function (response) {
@@ -602,7 +602,7 @@ export const postStatus = async (req, res) => {
 export const getCurrentDelivery = async (req, res) => {
   const { id } = req.session.user;
   axios
-    .post(`https://${JJ_IP}/consumer/getProceedingDelivery`, {
+    .post(`${JJ_IP}/consumer/getProceedingDelivery`, {
       data: { user_id: id },
     })
     .then(function (response) {
@@ -621,7 +621,7 @@ export const getCurrentDelivery = async (req, res) => {
 export const getPrevDelivery = async (req, res) => {
   const { id } = req.session.user;
   axios
-    .get(`https://${JJ_IP}/consumer/getFinishedDelivery`, {
+    .get(`${JJ_IP}/consumer/getFinishedDelivery`, {
       params: {
         user_id: id,
       },
